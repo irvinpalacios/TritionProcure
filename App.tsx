@@ -17,7 +17,7 @@ const App: React.FC = () => {
     name: "NIH-BR-2024",
     code: "85% Utilized",
     utilization: 85,
-    user: "Dr. Irvin Palacios"
+    user: "Dr. Palacios"
   };
 
   const startWorkflow = (type: 'procure' | 'event') => {
@@ -30,8 +30,8 @@ const App: React.FC = () => {
       greeting = {
         id: 'init-procure',
         role: 'agent',
-        content: "Hello Dr. Palacios. I am **TritonProcure**, your SmartProcure AI Agent at UC San Diego. I am ready to assist with your procurement needs while ensuring **Triton Preference** and **Gold Standard Compliance**. How can I help you today?",
-        actions: ["Order new microscope", "Plan workshop", "Check Status"],
+        content: "Hello Dr. Palacios. I am **TritonProcure**, your SmartProcure AI Agent at UC San Diego. I am ready to assist with your procurement needs. How can I help you today?",
+        actions: ["Place An Order", "Check Order Status", "Other"],
         timestamp: new Date()
       };
     } else {
@@ -147,16 +147,16 @@ const App: React.FC = () => {
         if (userInput.toLowerCase().includes("no") || userInput.toLowerCase().includes("own")) {
           return [
             "Initiating Marketplace Comparison...",
-            "Fetching Contracted Pricing (ThermoFisher/FisherScientific)",
-            "Calculating Non-Contracted Admin Surcharge",
+            "Fetching Contracted Pricing",
+            "Calculating Non-Contracted Difference",
             "Evaluating Ship-Time Reliability Index"
           ];
         }
         return ["Rerouting to Shared Asset Protocol...", "Contacting Resource Custodian"];
       case Phase.COMPARISON:
         return [
-          "Building Requisition Header in Oracle Cloud",
-          "Verifying NIH Fund Availability (NIH-BR-2024)",
+          "Building Requisition Header in Oracle Finanical Cloud",
+          "Verifying NIH Fund Availability (NIH-BR-2024) via Oracle PPM",
           "Executing SSJPR (Sole Source) Generation Engine",
           "Establishing Secure Handshake with Oracle Financial Cloud...",
           "Provisioning Requisition REQ0218927..."
@@ -227,13 +227,13 @@ const App: React.FC = () => {
     switch (phase) {
       case Phase.IDLE:
         response.thoughtProcess = "DETECT: High-value category (Research Instrumentation). CATEGORY: Electron Microscopes. MISSING: Specific resolution (nm) and voltage (kV) parameters required for Oracle Guided Buying validation.";
-        response.content = "I can certainly assist with that. To ensure technical parity and correct sourcing for a 33mm electron microscope, I'll need a few more technical specifications. Could you please provide the required **Resolution (nm)** and **Operating Voltage (kV)**?";
+        response.content = "I can certainly assist with that. To ensure technical parity and correct sourcing for a electron microscope, I'll need a few more technical specifications. Could you please provide the required **Resolution (nm)** and **Operating Voltage (kV)**?";
         setPhase(Phase.SPEC_CHECK);
         break;
 
       case Phase.SPEC_CHECK:
         response.thoughtProcess = "EXECUTE: Global Campus Asset Query. DATABASE: BioCore & Shared Labs. MATCH_FOUND: 3 units. STATUS: Underutilized (Usage < 20%). SUSTAINABILITY_GOAL: Resource Optimization 2.4.";
-        response.content = "Hold on ✋ — I scanned the campus-wide asset inventory and found **3 matching units** currently underutilized in the Biology Department (York Hall Cluster). \n\nWould you like to request access to share these resources instead of purchasing new equipment? This aligns with our **Triton Sustainability Goal (🌱)** and saves your project budget.";
+        response.content = "⚠️ Attention! \n\nI scanned the campus-wide asset inventory and found **2 matching units** currently underutilized in the Biology Department (York Hall Cluster). \n\nWould you like to request access to share these resources instead of purchasing new equipment? This helps  our **Triton Sustainability Goal** and **saves** your project budget!";
         response.actions = ["Yes, share resource", "No, I need my own"];
         setPhase(Phase.INVENTORY_CHECK);
         break;
@@ -245,14 +245,14 @@ const App: React.FC = () => {
           response.metadata = {
             type: 'comparison',
             options: [
-              { label: 'Non-Contracted (User Choice)', price: '$68,500', shipping: '4-6 Weeks', compliance: 'New Vendor Setup Req.', risk: 'High' },
+              { label: 'Non-Contracted (User Choice)', price: '$68,500', shipping: '4-6 Weeks', compliance: 'New Vendor Setup Required', risk: 'High' },
               { label: 'Triton Recommended (ThermoFisher)', price: '$58,500', shipping: 'Next-Day', compliance: 'Pre-negotiated Warranty', risk: 'Low' }
             ]
           };
           response.actions = ["Select Triton Recommended", "Proceed with Non-Contracted"];
           setPhase(Phase.COMPARISON);
         } else {
-          response.content = "Excellent choice. Initiating Resource Share request with Dr. Smith's lab in Biology. You've saved **$65,000** in project funds.";
+          response.content = "Excellent choice. Initiating Resource Share request with Dr. Smith's lab in Biology. You've saved **$195,000** in project funds.";
           setPhase(Phase.FINISHED);
         }
         break;
@@ -263,10 +263,10 @@ const App: React.FC = () => {
         response.metadata = {
           type: 'compliance_checklist',
           items: [
-            { text: "Price > $5,000 → Flagged as Inventorial Equipment (Exp Type 116)", status: 'done' },
-            { text: "R&D Tax Exemption Applied (CA Partial Sales Tax). SAVED: $1,200", status: 'done' },
+            { text: "Price > $5,000 → Flagged as Inventorial Equipment", status: 'done' },
+            { text: "R&D Tax Exemption Applied (CA Partial Sales Tax). SAVED: $31,500", status: 'done' },
             { text: "Federal Funds Verified (NIH-BR-2024)", status: 'done' },
-            { text: "SSJPR (Sole Source) Generated: Validated against Chemistry Dept historicals", status: 'done' }
+            { text: "SSJPR (Sole Source) Generated: Validated against Chemistry Department historicals", status: 'done' }
           ]
         };
         
