@@ -1,42 +1,12 @@
 
 import React from 'react';
-import { Search, ShoppingBag, Calendar, ArrowRight, Clock, MoreHorizontal } from 'lucide-react';
+import { Search, ShoppingBag, Calendar, ArrowRight } from 'lucide-react';
 
 interface DashboardProps {
   onStartWorkflow: (type: 'procure' | 'event') => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ onStartWorkflow }) => {
-  const recentActivity = [
-    {
-      id: 1,
-      title: "Microscope Maintenance Contract",
-      subtitle: "Today, 9:00 AM • Procurement",
-      status: "Draft",
-      statusColor: "bg-slate-100 text-slate-600",
-      icon: <ShoppingBag size={18} className="text-ucsd-blue" />,
-      iconBg: "bg-blue-50"
-    },
-    {
-      id: 2,
-      title: "Annual Biology Dept Symposium",
-      subtitle: "Yesterday • Event",
-      status: "Pending Approval",
-      statusColor: "bg-orange-50 text-orange-600",
-      icon: <Calendar size={18} className="text-purple-500" />,
-      iconBg: "bg-purple-50"
-    },
-    {
-      id: 3,
-      title: "Lab Safety Equipment (Gloves/Goggles)",
-      subtitle: "Oct 24, 2024 • Procurement",
-      status: "Approved",
-      statusColor: "bg-green-50 text-green-600",
-      icon: <ShoppingBag size={18} className="text-ucsd-blue" />,
-      iconBg: "bg-blue-50"
-    }
-  ];
-
   return (
     <div className="flex-1 overflow-y-auto bg-white">
       {/* Top Welcome Bar */}
@@ -56,10 +26,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ onStartWorkflow }) => {
         {/* Main Hero Section */}
         <div className="text-center mb-16">
           <h2 className="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
-            What would you like to orchestrate today?
+            Welcome to Triton Procure, your one-stop shop for all procure to pay needs.
           </h2>
           <p className="text-slate-500 text-lg font-medium">
-            Select a workflow to activate the TritonProcure Agent.
+            What are you trying to do today?
           </p>
         </div>
 
@@ -103,38 +73,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ onStartWorkflow }) => {
             <div className="flex items-center gap-2 text-slate-400 group-hover:text-purple-500 font-bold text-xs tracking-widest uppercase transition-colors">
               Start Workflow <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </div>
-          </div>
-        </div>
-
-        {/* Recent Activity Section */}
-        <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
-          <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-            <div className="flex items-center gap-2 font-bold text-slate-900">
-              <Clock size={18} className="text-slate-400" />
-              <span>Recent Activity</span>
-            </div>
-            <button className="text-sm font-bold text-ucsd-blue hover:underline">View All</button>
-          </div>
-          <div className="divide-y divide-slate-50">
-            {recentActivity.map((item) => (
-              <div key={item.id} className="p-6 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer group">
-                <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 ${item.iconBg} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                    {item.icon}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-slate-900 text-sm">{item.title}</h4>
-                    <p className="text-[11px] text-slate-400 font-medium">{item.subtitle}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-6">
-                  <span className={`px-3 py-1 rounded-full text-[10px] font-bold ${item.statusColor}`}>
-                    {item.status}
-                  </span>
-                  <MoreHorizontal size={18} className="text-slate-300 hover:text-slate-500" />
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </div>

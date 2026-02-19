@@ -184,12 +184,12 @@ const App: React.FC = () => {
           break;
 
         case Phase.EVENT_VENUE_CHECK:
-          response.thoughtProcess = "APPLY: BUS-79 Entertainment Policy. FUND_SOURCE: Fundraising. COMPLIANCE: Catering per-person max check. SUPPLIER_MATCH: Rentals (Abbey), Valet (Ace), Catering (Saltaire).";
+          response.thoughtProcess = "APPLY: BUS-79 Entertainment Policy. \n\nFUND_SOURCE: Fundraising. \n\nCOMPLIANCE: Catering per-person max check. \n\nSUPPLIER_MATCH: Rentals (Abbey), Valet (Ace), Catering (Saltaire).";
           response.content = "Excellent. Since the nature of the event is **Fundraising** for Employees and Donors, I've identified the appropriate Triton-Preferred suppliers and policy requirements:\n\n" +
-            "• **Rentals**: Use *Abbey Party Rentals* (Agreement Supplier). Reach out for a quote, then I'll generate the PO.\n" +
-            "• **Valets**: Use *Ace Parking* (Preferred Partner). Request a quote for the specific guest count.\n" +
-            "• **Catering**: Redirect to **Saltaire**. Note: Current meal maximums are $31 (Breakfast), $54 (Lunch), $94 (Dinner). Ensure guest list is attached for donor compliance.\n" +
-            "• **Speaker**: To compensate your speaker, we will create a **Payment Request**.\n\n" +
+            "• **Rentals**: Use *Abbey Party Rentals* (Agreement Supplier). Reach out for a quote, then I'll generate the PO.\n\n" +
+            "• **Valets**: Use *Ace Parking* (Preferred Partner). Request a quote for the specific guest count.\n\n" +
+            "• **Catering**: Redirect to **Saltaire**. \n\n&nbsp;&nbsp;&nbsp;&nbsp;*Note: Current meal maximums are $31 (Breakfast), $54 (Lunch), $94 (Dinner). Ensure guest list is attached for donor compliance.*\n\n" +
+            "• **Speaker**: To compensate your speaker, we will create a **Payment Request**.\n\n\n" +
             "Are you ready to draft your payment request for the speaker?";
           response.actions = ["Start Payment Request", "Not yet"];
           setPhase(Phase.EVENT_POLICY_GUIDANCE);
@@ -198,10 +198,8 @@ const App: React.FC = () => {
         case Phase.EVENT_POLICY_GUIDANCE:
           if (userInput.toLowerCase().includes("start")) {
             response.thoughtProcess = "INIT_FORM: Payment Request. REQUIREMENT: Speaker Name, Date, Location, Invoice.";
-            response.content = "Great. Please provide the following details for the Speaker Payment:\n\n" +
+            response.content = "Great. Since I already have the event details for **SIO** on **3/1/2026**, I just need to know:\n\n" +
               "1. **Who is the speaker?**\n" +
-              "2. **What is the event date?**\n" +
-              "3. **What is the location?**\n\n" +
               "I'll also need you to attach the invoice or appropriate documentation once we finalize.";
             setPhase(Phase.EVENT_SPEAKER_FORM);
           } else {
@@ -212,7 +210,7 @@ const App: React.FC = () => {
 
         case Phase.EVENT_SPEAKER_FORM:
           response.thoughtProcess = "EXECUTE: Oracle Payment Request API. ATTACHMENT_VERIFIED: True. ROUTING: Financial Cloud Requisition Queue.";
-          response.content = "✅ **Payment Request successfully drafted in Oracle Financial Cloud.**\n\nI have populated the location (SIO Forum) and the date from our records. The invoice has been attached for processing. \n\n**Requisition #REQ0991223** is now routing to your Departmental Approver.";
+          response.content = "✅ **Payment Request successfully drafted in Oracle Financial Cloud.**\n\nI have populated the location (SIO Forum) and the date from our records. The invoice has been attached for processing. \n\n**Invoice #00236823** is now routing to your Departmental Approver.";
           setPhase(Phase.FINISHED);
           break;
 
