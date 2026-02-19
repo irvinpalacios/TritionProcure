@@ -1,0 +1,346 @@
+
+import React, { useState, useEffect } from 'react';
+import { Sidebar } from './components/Sidebar';
+import { ChatArea } from './components/ChatArea';
+import { Dashboard } from './components/Dashboard';
+import { Phase, Message, ProjectInfo, ProcessingStep } from './types';
+
+const App: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'chat'>('dashboard');
+  const [phase, setPhase] = useState<Phase>(Phase.IDLE);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [currentSteps, setCurrentSteps] = useState<ProcessingStep[]>([]);
+  const [workflowType, setWorkflowType] = useState<'procure' | 'event' | null>(null);
+  
+  const projectInfo: ProjectInfo = {
+    name: "NIH-BR-2024",
+    code: "85% Utilized",
+    utilization: 85,
+    user: "Dr. Irvin Palacios"
+  };
+
+  const startWorkflow = (type: 'procure' | 'event') => {
+    setWorkflowType(type);
+    setActiveTab('chat');
+    setPhase(Phase.IDLE);
+    
+    let greeting: Message;
+    if (type === 'procure') {
+      greeting = {
+        id: 'init-procure',
+        role: 'agent',
+        content: "Hello Dr. Palacios. I am **TritonProcure**, your SmartProcure AI Agent at UC San Diego. I am ready to assist with your procurement needs while ensuring **Triton Preference** and **Gold Standard Compliance**. How can I help you today?",
+        actions: ["Order new microscope", "Plan workshop", "Check Status"],
+        timestamp: new Date()
+      };
+    } else {
+      greeting = {
+        id: 'init-event',
+        role: 'agent',
+        content: "Hello Dr. Palacios. I am ready to help you **Plan an Event**. I'll manage venues, catering, and ensure we stay within entertainment policy. What are we organizing today?",
+        actions: ["Department Symposium", "Guest Speaker Lunch", "Retreat Planning"],
+        timestamp: new Date()
+      };
+    }
+    setMessages([greeting]);
+  };
+
+  const runProcessingSteps = async (steps: string[]) => {
+    setIsTyping(true);
+    const initialSteps: ProcessingStep[] = steps.map((s, i) => ({
+      id: i.toString(),
+      label: s,
+      status: i === 0 ? 'active' : 'pending'
+    }));
+    
+    setCurrentSteps(initialSteps);
+
+    for (let i = 0; i < steps.length; i++) {
+      setCurrentSteps(prev => prev.map((step, idx) => {
+        if (idx < i) return { ...step, status: 'complete' };
+        if (idx === i) return { ...step, status: 'active' };
+        return step;
+      }));
+      
+      const isLastStep = i === steps.length - 1;
+      const isOracleIntegration = (phase === Phase.COMPARISON || phase === Phase.EVENT_SPEAKER_FINALIZE) && isLastStep;
+      
+      const delay = isOracleIntegration 
+        ? 4500 
+        : 2200 + Math.random() * 1000; 
+        
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+
+    setCurrentSteps(prev => prev.map(step => ({ ...step, status: 'complete' })));
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    setIsTyping(false);
+    setCurrentSteps([]);
+  };
+
+  const handleSendMessage = async (text: string) => {
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: text,
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, userMsg]);
+
+    const steps = getStepsForPhase(phase, text);
+    await runProcessingSteps(steps);
+    processNextPhase(text);
+  };
+
+  const getStepsForPhase = (currentPhase: Phase, userInput: string): string[] => {
+    if (workflowType === 'event') {
+      switch (currentPhase) {
+        case Phase.IDLE:
+          return [
+            "Parsing Event Requirements...",
+            "Validating SIO Forum Facility Policies",
+            "Cross-referencing Venue Availability",
+            "Checking Risk Management Thresholds"
+          ];
+        case Phase.EVENT_VENUE_CHECK:
+          return [
+            "Applying Entertainment Policy (BUS-79)",
+            "Querying Agreement Suppliers (Rentals/Valet)",
+            "Checking Catering Compliance (Saltaire Partnership)",
+            "Calculating Per-Person Maximums"
+          ];
+        case Phase.EVENT_POLICY_GUIDANCE:
+          return [
+            "Verifying Speaker Engagement Criteria",
+            "Preparing Payment Request Template",
+            "Mapping Documentation Requirements (Invoice/W9)"
+          ];
+        case Phase.EVENT_SPEAKER_FORM:
+          return [
+            "Finalizing Payment Request for Oracle",
+            "Uploading Documentation to Financial Cloud",
+            "Routing to Departmental Approval Queue"
+          ];
+        default:
+          return ["Optimizing Workflow...", "Syncing with Oracle ERP"];
+      }
+    }
+
+    switch (currentPhase) {
+      case Phase.IDLE:
+        return [
+          "Parsing Procurement Intent...",
+          "Identifying Category (High-Value Research)",
+          "Cross-referencing Oracle Commodity Codes",
+          "Flagging Missing Technical Specs"
+        ];
+      case Phase.SPEC_CHECK:
+        return [
+          "Querying BioCore Asset Registry...",
+          "Scanning York Hall Shared Equipment Database",
+          "Analyzing Utilization Data (Usage < 20%)",
+          "Calculating Sustainability Parity Score"
+        ];
+      case Phase.INVENTORY_CHECK:
+        if (userInput.toLowerCase().includes("no") || userInput.toLowerCase().includes("own")) {
+          return [
+            "Initiating Marketplace Comparison...",
+            "Fetching Contracted Pricing (ThermoFisher/FisherScientific)",
+            "Calculating Non-Contracted Admin Surcharge",
+            "Evaluating Ship-Time Reliability Index"
+          ];
+        }
+        return ["Rerouting to Shared Asset Protocol...", "Contacting Resource Custodian"];
+      case Phase.COMPARISON:
+        return [
+          "Building Requisition Header in Oracle Cloud",
+          "Verifying NIH Fund Availability (NIH-BR-2024)",
+          "Executing SSJPR (Sole Source) Generation Engine",
+          "Establishing Secure Handshake with Oracle Financial Cloud...",
+          "Provisioning Requisition REQ0218927..."
+        ];
+      default:
+        return ["Optimizing Workflow...", "Syncing with Oracle ERP"];
+    }
+  };
+
+  const processNextPhase = (userInput: string) => {
+    let response: Message = {
+      id: (Date.now() + 1).toString(),
+      role: 'agent',
+      content: '',
+      timestamp: new Date()
+    };
+
+    if (workflowType === 'event') {
+      switch (phase) {
+        case Phase.IDLE:
+          response.thoughtProcess = "DETECT: SIO Forum Event. CATEGORY: Complex Event Planning. POLICY_CHECK: SIO Forum requires specific guest list composition for facility fee waivers and entertainment compliance.";
+          response.content = "The SIO Forum is a fantastic venue. Since this is a specialized facility, I need to check the guest list composition for policy compliance. \n\n**Are the attendees primarily students, faculty/staff, or external donors?**";
+          response.actions = ["Fundraising (Donors/Staff)", "Academic Conference", "Internal Meeting"];
+          setPhase(Phase.EVENT_VENUE_CHECK);
+          break;
+
+        case Phase.EVENT_VENUE_CHECK:
+          response.thoughtProcess = "APPLY: BUS-79 Entertainment Policy. FUND_SOURCE: Fundraising. COMPLIANCE: Catering per-person max check. SUPPLIER_MATCH: Rentals (Abbey), Valet (Ace), Catering (Saltaire).";
+          response.content = "Excellent. Since the nature of the event is **Fundraising** for Employees and Donors, I've identified the appropriate Triton-Preferred suppliers and policy requirements:\n\n" +
+            "• **Rentals**: Use *Abbey Party Rentals* (Agreement Supplier). Reach out for a quote, then I'll generate the PO.\n" +
+            "• **Valets**: Use *Ace Parking* (Preferred Partner). Request a quote for the specific guest count.\n" +
+            "• **Catering**: Redirect to **Saltaire**. Note: Current meal maximums are $31 (Breakfast), $54 (Lunch), $94 (Dinner). Ensure guest list is attached for donor compliance.\n" +
+            "• **Speaker**: To compensate your speaker, we will create a **Payment Request**.\n\n" +
+            "Are you ready to draft your payment request for the speaker?";
+          response.actions = ["Start Payment Request", "Not yet"];
+          setPhase(Phase.EVENT_POLICY_GUIDANCE);
+          break;
+
+        case Phase.EVENT_POLICY_GUIDANCE:
+          if (userInput.toLowerCase().includes("start")) {
+            response.thoughtProcess = "INIT_FORM: Payment Request. REQUIREMENT: Speaker Name, Date, Location, Invoice.";
+            response.content = "Great. Please provide the following details for the Speaker Payment:\n\n" +
+              "1. **Who is the speaker?**\n" +
+              "2. **What is the event date?**\n" +
+              "3. **What is the location?**\n\n" +
+              "I'll also need you to attach the invoice or appropriate documentation once we finalize.";
+            setPhase(Phase.EVENT_SPEAKER_FORM);
+          } else {
+            response.content = "No problem. I've saved these supplier recommendations to your dashboard under 'Draft Events'. Let me know when you're ready to proceed.";
+            setPhase(Phase.FINISHED);
+          }
+          break;
+
+        case Phase.EVENT_SPEAKER_FORM:
+          response.thoughtProcess = "EXECUTE: Oracle Payment Request API. ATTACHMENT_VERIFIED: True. ROUTING: Financial Cloud Requisition Queue.";
+          response.content = "✅ **Payment Request successfully drafted in Oracle Financial Cloud.**\n\nI have populated the location (SIO Forum) and the date from our records. The invoice has been attached for processing. \n\n**Requisition #REQ0991223** is now routing to your Departmental Approver.";
+          setPhase(Phase.FINISHED);
+          break;
+
+        default:
+          response.content = "The event workflow is complete. How else can I assist with your planning today?";
+      }
+      setMessages(prev => [...prev, response]);
+      return;
+    }
+
+    // Procurement Workflow (Existing)
+    switch (phase) {
+      case Phase.IDLE:
+        response.thoughtProcess = "DETECT: High-value category (Research Instrumentation). CATEGORY: Electron Microscopes. MISSING: Specific resolution (nm) and voltage (kV) parameters required for Oracle Guided Buying validation.";
+        response.content = "I can certainly assist with that. To ensure technical parity and correct sourcing for a 33mm electron microscope, I'll need a few more technical specifications. Could you please provide the required **Resolution (nm)** and **Operating Voltage (kV)**?";
+        setPhase(Phase.SPEC_CHECK);
+        break;
+
+      case Phase.SPEC_CHECK:
+        response.thoughtProcess = "EXECUTE: Global Campus Asset Query. DATABASE: BioCore & Shared Labs. MATCH_FOUND: 3 units. STATUS: Underutilized (Usage < 20%). SUSTAINABILITY_GOAL: Resource Optimization 2.4.";
+        response.content = "Hold on ✋ — I scanned the campus-wide asset inventory and found **3 matching units** currently underutilized in the Biology Department (York Hall Cluster). \n\nWould you like to request access to share these resources instead of purchasing new equipment? This aligns with our **Triton Sustainability Goal (🌱)** and saves your project budget.";
+        response.actions = ["Yes, share resource", "No, I need my own"];
+        setPhase(Phase.INVENTORY_CHECK);
+        break;
+
+      case Phase.INVENTORY_CHECK:
+        if (userInput.toLowerCase().includes("no") || userInput.toLowerCase().includes("own")) {
+          response.thoughtProcess = "USER_OVERRIDE: New Purchase Required. COMPLIANCE_SCAN: Non-Contracted vs contracted. DELTA_CALC: $10,000 savings potential via ThermoFisher Contract. ADMIN_BURDEN: High for new vendor setup.";
+          response.content = "Understood. I've prepared a comparison of your requested supplier versus our **Triton Recommended** supplier to ensure we maximize your NIH grant efficiency:";
+          response.metadata = {
+            type: 'comparison',
+            options: [
+              { label: 'Non-Contracted (User Choice)', price: '$68,500', shipping: '4-6 Weeks', compliance: 'New Vendor Setup Req.', risk: 'High' },
+              { label: 'Triton Recommended (ThermoFisher)', price: '$58,500', shipping: 'Next-Day', compliance: 'Pre-negotiated Warranty', risk: 'Low' }
+            ]
+          };
+          response.actions = ["Select Triton Recommended", "Proceed with Non-Contracted"];
+          setPhase(Phase.COMPARISON);
+        } else {
+          response.content = "Excellent choice. Initiating Resource Share request with Dr. Smith's lab in Biology. You've saved **$65,000** in project funds.";
+          setPhase(Phase.FINISHED);
+        }
+        break;
+
+      case Phase.COMPARISON:
+        response.thoughtProcess = "WORKFLOW_TRIGGER: Final Checkout. AUTO_TAX_SCAN: CA Partial Sales Tax Exemption (Research). FUND_VERIFY: NIH-BR-2024. COMPLIANCE: SSJPR generation via historical price parity.";
+        response.content = "Excellent. I am now finalizing the requisition. You don't need to do anything further—I am auto-generating the required compliance documentation and routing this through **Oracle Financial Cloud**.";
+        response.metadata = {
+          type: 'compliance_checklist',
+          items: [
+            { text: "Price > $5,000 → Flagged as Inventorial Equipment (Exp Type 116)", status: 'done' },
+            { text: "R&D Tax Exemption Applied (CA Partial Sales Tax). SAVED: $1,200", status: 'done' },
+            { text: "Federal Funds Verified (NIH-BR-2024)", status: 'done' },
+            { text: "SSJPR (Sole Source) Generated: Validated against Chemistry Dept historicals", status: 'done' }
+          ]
+        };
+        
+        setTimeout(() => {
+          const poMsg: Message = {
+            id: 'po-final',
+            role: 'agent',
+            content: "✅ **Requisition successfully submitted to Oracle Cloud.** \n\n**Requisition #REQ0218927** has been created. The supplier has been notified via the B2B portal. Tracking information will be updated in your dashboard shortly.",
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, poMsg]);
+        }, 4000);
+        setPhase(Phase.FINISHED);
+        break;
+      
+      default:
+        response.content = "Process complete. How else can I assist with your procurement pipeline today?";
+    }
+
+    setMessages(prev => [...prev, response]);
+  };
+
+  const getActiveSessionName = () => {
+    if (workflowType === 'procure') return "Procurement Assistant";
+    if (workflowType === 'event') return "Event Coordinator";
+    return null;
+  };
+
+  return (
+    <div className="flex h-screen w-full bg-slate-50 overflow-hidden text-slate-900">
+      <Sidebar projectInfo={projectInfo} activeTab={activeTab} setActiveTab={setActiveTab} />
+
+      <main className="flex-1 flex flex-col min-w-0">
+        <header className="h-20 border-b border-slate-200 bg-white flex items-center justify-between px-8 shadow-sm z-10 shrink-0">
+          <div className="flex items-center gap-4">
+            {getActiveSessionName() && (
+              <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left duration-500">
+                <span className="text-xs font-semibold text-slate-400">Active Session:</span>
+                <div className="flex items-center gap-2 bg-blue-50/80 border border-blue-100 rounded-full px-4 py-2 shadow-sm">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                  <span className="text-xs font-bold text-ucsd-blue tracking-tight">
+                    {getActiveSessionName()}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <p className="text-sm font-bold text-slate-700">{projectInfo.user}</p>
+              <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">PI • Biology Department</p>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-slate-200 border-2 border-white shadow-sm overflow-hidden ring-1 ring-slate-100">
+              <img src="https://picsum.photos/seed/drpalacios/100/100" alt="Avatar" />
+            </div>
+          </div>
+        </header>
+
+        {activeTab === 'dashboard' ? (
+          <Dashboard onStartWorkflow={startWorkflow} />
+        ) : (
+          <ChatArea 
+            messages={messages} 
+            isTyping={isTyping} 
+            processingSteps={currentSteps}
+            phase={phase}
+            userName={projectInfo.user}
+            onSendMessage={handleSendMessage} 
+          />
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default App;

@@ -1,0 +1,8 @@
+{
+  "name": "TritonProcure - Smart Procurement AI",
+  "description": "An advanced Agentic AI interface for UC San Diego procurement, demonstrating guided buying, resource sharing, and invisible compliance integration with Oracle Cloud.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

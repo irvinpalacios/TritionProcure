@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TritonProcure - UCSD Smart Procurement</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .ucsd-navy { color: #182B49; }
+        .bg-ucsd-navy { background-color: #182B49; }
+        .ucsd-gold { color: #FFCD00; }
+        .bg-ucsd-gold { background-color: #FFCD00; }
+        .ucsd-blue { color: #00629B; }
+        .bg-ucsd-blue { background-color: #00629B; }
+        
+        @keyframes pulse-subtle {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.7; }
+        }
+        .animate-pulse-subtle { animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+        @keyframes progress-fast {
+          0% { width: 0%; }
+          100% { width: 100%; }
+        }
+        .animate-progress-fast { animation: progress-fast 1s ease-in-out infinite; }
+
+        @keyframes pulse-ring {
+          0% { transform: scale(0.8); opacity: 0.5; }
+          100% { transform: scale(2.4); opacity: 0; }
+        }
+        .animate-pulse-ring { animation: pulse-ring 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@19.0.0",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "lucide-react": "https://esm.sh/lucide-react@0.474.0",
+    "react-markdown": "https://esm.sh/react-markdown@9.0.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/"
+  }
+}
+</script>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased overflow-hidden">
+    <div id="root"></div>
+</body>
+</html>
