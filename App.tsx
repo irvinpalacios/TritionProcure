@@ -346,7 +346,6 @@ const App: React.FC = () => {
         if (userInput.includes("NSF")) selectedProject = "NSF-PHY-2025";
         if (userInput.includes("GEN")) selectedProject = "GEN-FUND-2026";
         
-        response.thoughtProcess = "DETECT: Funding source selected. ACTION: Verifying allowable equipment categories on selected grant. QUERYING: Approved institutional supplier catalogs for specified PTA.";
         response.content = `Budget check passed for **${selectedProject}**. Based on this funding source's approved catalogs, I have retrieved the best sourcing options for your specifications:`;
         response.metadata = {
           type: 'comparison',
@@ -360,26 +359,22 @@ const App: React.FC = () => {
         break;
 
       case Phase.COMPARISON:
-        response.thoughtProcess = "DETECT: Supplier selected. ACTION: Flagging potential CA Partial Sales Tax Exemption based on department Life Sciences R&D registration.";
         response.content = "I see you've selected the ThermoFisher equipment ($58,500). Based on your department’s registration (Life Sciences R&D), this item may qualify for the California Partial Sales Tax Exemption, which would save you approximately $2,303 on this transaction.\n\nWould you like me to verify eligibility and generate the exemption certificate for the vendor?";
         response.actions = ["Yes, let's do that", "No, skip exemption"];
         setPhase(Phase.TAX_EXEMPTION_INIT);
         break;
 
       case Phase.TAX_EXEMPTION_INIT:
-        response.thoughtProcess = "DETECT: Exemption verification initiated. ACTION: Loading CA Board of Equalization Reg 1525.4 criteria.";
         response.content = "Great. To ensure high-compliance and minimize audit risk, I just need to confirm three things:\n\n1. **Useful Life:** Will this equipment be used in your lab for at least one year?\n2. **Usage:** Will it be used 50% or more of the time for R&D activities here in California?\n3. **Exclusion Check:** Is this item strictly for research, or will it be used for administrative or marketing purposes?";
         setPhase(Phase.TAX_EXEMPTION_Q1);
         break;
 
       case Phase.TAX_EXEMPTION_Q1:
-        response.thoughtProcess = "EVALUATE: Criteria 1-3 met. ACTION: Verifying NAICS code alignment.";
         response.content = "Perfect. One final compliance check: Our records show your primary NAICS code is 541711 (Biotech R&D). Does this purchase support an activity where you are discovering information that is technological in nature for a new or improved business component?";
         setPhase(Phase.TAX_EXEMPTION_Q2);
         break;
 
       case Phase.TAX_EXEMPTION_Q2:
-        response.thoughtProcess = "EXECUTE: Generate form CDTFA-230-M. ATTACH: Purchase Order. RECALCULATE: Taxes.";
         response.content = "Eligibility confirmed.\n\n• **Compliance Status:** High (Meets Reg. 1525.4 criteria).\n\n• **Tax Impact:** Applied 3.9375% reduction to the state portion.\n\n• **Action:** I have generated the CDTFA-230-M certificate and attached it to your Requistion Order. The vendor will receive this automatically.\n\nYour estimated total has been updated from $58,500 to $56,197. \n\n **Ready to submit?**";
         setPhase(Phase.COMPLIANCE);
         break;

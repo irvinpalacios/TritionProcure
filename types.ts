@@ -34,7 +34,6 @@ export interface Message {
   id: string;
   role: 'user' | 'agent';
   content: string;
-  thoughtProcess?: string;
   timestamp: Date;
   actions?: string[];
   metadata?: any;
