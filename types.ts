@@ -10,7 +10,9 @@ export enum Phase {
   EVENT_VENUE_CHECK = 6,
   EVENT_POLICY_GUIDANCE = 7,
   EVENT_SPEAKER_FORM = 8,
-  EVENT_SPEAKER_FINALIZE = 9
+  EVENT_SPEAKER_FINALIZE = 9,
+  // New Procurement Phase
+  FUNDING_CHECK = 10
 }
 
 export interface ProcessingStep {
@@ -29,9 +31,14 @@ export interface Message {
   metadata?: any;
 }
 
-export interface ProjectInfo {
+export interface Project {
   name: string;
-  code: string;
+  funder: string;
+  grantId: string;
   utilization: number;
+}
+
+export interface ProjectInfo {
   user: string;
+  projects: Project[];
 }

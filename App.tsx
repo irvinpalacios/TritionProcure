@@ -14,10 +14,21 @@ const App: React.FC = () => {
   const [workflowType, setWorkflowType] = useState<'procure' | 'event' | null>(null);
   
   const projectInfo: ProjectInfo = {
-    name: "NIH-BR-2024",
-    code: "85% Utilized",
-    utilization: 85,
-    user: "Dr. Palacios"
+    user: "Dr. Palacios",
+    projects: [
+      {
+        name: "NIH-BR-2024",
+        funder: "NIH",
+        grantId: "Grant #2024-BR-UCSD",
+        utilization: 85
+      },
+      {
+        name: "NSF-PHY-2025",
+        funder: "NSF",
+        grantId: "Grant #2025-PHY-NSF",
+        utilization: 50
+      }
+    ]
   };
 
   const startWorkflow = (type: 'procure' | 'event') => {
@@ -64,7 +75,7 @@ const App: React.FC = () => {
       }));
       
       const isLastStep = i === steps.length - 1;
-      const isOracleIntegration = (phase === Phase.COMPARISON || phase === Phase.EVENT_SPEAKER_FINALIZE) && isLastStep;
+      const isOracleIntegration = (phase === Phase.COMPARISON || phase === Phase.EVENT_SPEAKER_FINALIZE || phase === Phase.FUNDING_CHECK) && isLastStep;
       
       const delay = isOracleIntegration 
         ? 4500 
@@ -138,28 +149,34 @@ const App: React.FC = () => {
         ];
       case Phase.SPEC_CHECK:
         return [
-          "Querying BioCore Asset Registry...",
+          "Querying CoreBio Asset Registry...",
           "Scanning York Hall Shared Equipment Database",
-          "Analyzing Utilization Data (Usage < 20%)",
+          "Analyzing Utilization Data",
           "Calculating Sustainability Parity Score"
         ];
       case Phase.INVENTORY_CHECK:
         if (userInput.toLowerCase().includes("no") || userInput.toLowerCase().includes("own")) {
           return [
-            "Initiating Marketplace Comparison...",
-            "Fetching Contracted Pricing",
-            "Calculating Non-Contracted Difference",
-            "Evaluating Ship-Time Reliability Index"
+            "Fetching Active Grants from Oracle PPM...",
+            "Identifying Eligible Funds (NIH/NSF)",
+            "Preparing Budget Selection Interface"
           ];
         }
         return ["Rerouting to Shared Asset Protocol...", "Contacting Resource Custodian"];
+      case Phase.FUNDING_CHECK:
+        return [
+          "Accessing Oracle PPM Funding Module...",
+          "Validating Budget Availability...",
+          "Checking Grant Expiration Dates...",
+          "Verifying Allowability for Spend Category (5000+)"
+        ];
       case Phase.COMPARISON:
         return [
           "Building Requisition Header in Oracle Finanical Cloud",
-          "Verifying NIH Fund Availability (NIH-BR-2024) via Oracle PPM",
+          "Verifying Fund Availability via Oracle PPM",
           "Executing SSJPR (Sole Source) Generation Engine",
           "Establishing Secure Handshake with Oracle Financial Cloud...",
-          "Provisioning Requisition REQ0218927..."
+          "Provisioning Requisition..."
         ];
       default:
         return ["Optimizing Workflow...", "Syncing with Oracle ERP"];
@@ -177,14 +194,12 @@ const App: React.FC = () => {
     if (workflowType === 'event') {
       switch (phase) {
         case Phase.IDLE:
-          response.thoughtProcess = "DETECT: SIO Forum Event. CATEGORY: Complex Event Planning. POLICY_CHECK: SIO Forum requires specific guest list composition for facility fee waivers and entertainment compliance.";
           response.content = "The SIO Forum is a fantastic venue. Since this is a specialized facility, I need to check the guest list composition for policy compliance. \n\n**Are the attendees primarily students, faculty/staff, or external donors?**";
           response.actions = ["Fundraising (Donors/Staff)", "Academic Conference", "Internal Meeting"];
           setPhase(Phase.EVENT_VENUE_CHECK);
           break;
 
         case Phase.EVENT_VENUE_CHECK:
-          response.thoughtProcess = "APPLY: BUS-79 Entertainment Policy. \n\nFUND_SOURCE: Fundraising. \n\nCOMPLIANCE: Catering per-person max check. \n\nSUPPLIER_MATCH: Rentals (Abbey), Valet (Ace), Catering (Saltaire).";
           response.content = "Excellent. Since the nature of the event is **Fundraising** for Employees and Donors, I've identified the appropriate Triton-Preferred suppliers and policy requirements:\n\n" +
             "• **Rentals**: Use *Abbey Party Rentals* (Agreement Supplier). Reach out for a quote, then I'll generate the PO.\n\n" +
             "• **Valets**: Use *Ace Parking* (Preferred Partner). Request a quote for the specific guest count.\n\n" +
@@ -197,7 +212,6 @@ const App: React.FC = () => {
 
         case Phase.EVENT_POLICY_GUIDANCE:
           if (userInput.toLowerCase().includes("start")) {
-            response.thoughtProcess = "INIT_FORM: Payment Request. REQUIREMENT: Speaker Name, Date, Location, Invoice.";
             response.content = "Great. Since I already have the event details for **SIO** on **3/1/2026**, I just need to know:\n\n" +
               "1. **Who is the speaker?**\n" +
               "I'll also need you to attach the invoice or appropriate documentation once we finalize.";
@@ -209,7 +223,6 @@ const App: React.FC = () => {
           break;
 
         case Phase.EVENT_SPEAKER_FORM:
-          response.thoughtProcess = "EXECUTE: Oracle Payment Request API. ATTACHMENT_VERIFIED: True. ROUTING: Financial Cloud Requisition Queue.";
           response.content = "✅ **Payment Request successfully drafted in Oracle Financial Cloud.**\n\nI have populated the location (SIO Forum) and the date from our records. The invoice has been attached for processing. \n\n**Invoice #00236823** is now routing to your Departmental Approver.";
           setPhase(Phase.FINISHED);
           break;
@@ -224,46 +237,49 @@ const App: React.FC = () => {
     // Procurement Workflow (Existing)
     switch (phase) {
       case Phase.IDLE:
-        response.thoughtProcess = "DETECT: High-value category (Research Instrumentation). CATEGORY: Electron Microscopes. MISSING: Specific resolution (nm) and voltage (kV) parameters required for Oracle Guided Buying validation.";
         response.content = "I can certainly assist with that. To ensure technical parity and correct sourcing for a electron microscope, I'll need a few more technical specifications. Could you please provide the required **Resolution (nm)** and **Operating Voltage (kV)**?";
         setPhase(Phase.SPEC_CHECK);
         break;
 
       case Phase.SPEC_CHECK:
-        response.thoughtProcess = "EXECUTE: Global Campus Asset Query. DATABASE: BioCore & Shared Labs. MATCH_FOUND: 3 units. STATUS: Underutilized (Usage < 20%). SUSTAINABILITY_GOAL: Resource Optimization 2.4.";
-        response.content = "⚠️ Attention! \n\nI scanned the campus-wide asset inventory and found **2 matching units** currently underutilized in the Biology Department (York Hall Cluster). \n\nWould you like to request access to share these resources instead of purchasing new equipment? This helps  our **Triton Sustainability Goal** and **saves** your project budget!";
+        response.content = "⚠️ **Attention!** \n\nI scanned the campus-wide asset inventory and found **2 matching units** currently underutilized in the Biology Department (York Hall Cluster). \n\nWould you like to request access to share these resources instead of purchasing new equipment? This helps our **sustainability goal** and **saves** your project budget!";
         response.actions = ["Yes, share resource", "No, I need my own"];
         setPhase(Phase.INVENTORY_CHECK);
         break;
 
       case Phase.INVENTORY_CHECK:
         if (userInput.toLowerCase().includes("no") || userInput.toLowerCase().includes("own")) {
-          response.thoughtProcess = "USER_OVERRIDE: New Purchase Required. COMPLIANCE_SCAN: Non-Contracted vs contracted. DELTA_CALC: $10,000 savings potential via ThermoFisher Contract. ADMIN_BURDEN: High for new vendor setup.";
-          response.content = "Understood. I've prepared a comparison of your requested supplier versus our **Triton Recommended** supplier to ensure we maximize your NIH grant efficiency:";
-          response.metadata = {
-            type: 'comparison',
-            options: [
-              { label: 'Non-Contracted (User Choice)', price: '$68,500', shipping: '4-6 Weeks', compliance: 'New Vendor Setup Required', risk: 'High' },
-              { label: 'Triton Recommended (ThermoFisher)', price: '$58,500', shipping: 'Next-Day', compliance: 'Pre-negotiated Warranty', risk: 'Low' }
-            ]
-          };
-          response.actions = ["Select Triton Recommended", "Proceed with Non-Contracted"];
-          setPhase(Phase.COMPARISON);
+          response.content = "Understood. Which project would you like to charge this purchase to? I've verified that both your active grants (NIH and NSF) have sufficient funds and allow for this type of research equipment.";
+          response.actions = ["Charge to NIH-BR-2024", "Charge to NSF-PHY-2025"];
+          setPhase(Phase.FUNDING_CHECK);
         } else {
           response.content = "Excellent choice. Initiating Resource Share request with Dr. Smith's lab in Biology. You've saved **$195,000** in project funds.";
           setPhase(Phase.FINISHED);
         }
         break;
 
+      case Phase.FUNDING_CHECK:
+        const selectedProject = userInput.includes("NIH") ? "NIH-BR-2024" : "NSF-PHY-2025";
+        response.content = `Budget check passed for **${selectedProject}**. I've prepared a comparison of your requested supplier versus our **Triton Recommended** supplier to ensure we maximize your grant efficiency:`;
+        response.metadata = {
+          type: 'comparison',
+          options: [
+            { label: 'Non-Contracted (User Choice)', price: '$68,500', shipping: '4-6 Weeks', compliance: 'New Vendor Setup Required', risk: 'High' },
+            { label: 'Triton Recommended (ThermoFisher)', price: '$58,500', shipping: '1 Week', compliance: 'Pre-negotiated Warranty', risk: 'Low' }
+          ]
+        };
+        response.actions = ["Select Triton Recommended", "Proceed with Non-Contracted"];
+        setPhase(Phase.COMPARISON);
+        break;
+
       case Phase.COMPARISON:
-        response.thoughtProcess = "WORKFLOW_TRIGGER: Final Checkout. AUTO_TAX_SCAN: CA Partial Sales Tax Exemption (Research). FUND_VERIFY: NIH-BR-2024. COMPLIANCE: SSJPR generation via historical price parity.";
         response.content = "Excellent. I am now finalizing the requisition. You don't need to do anything further—I am auto-generating the required compliance documentation and routing this through **Oracle Financial Cloud**.";
         response.metadata = {
           type: 'compliance_checklist',
           items: [
             { text: "Price > $5,000 → Flagged as Inventorial Equipment", status: 'done' },
             { text: "R&D Tax Exemption Applied (CA Partial Sales Tax). SAVED: $31,500", status: 'done' },
-            { text: "Federal Funds Verified (NIH-BR-2024)", status: 'done' },
+            { text: "Federal Funds Verified", status: 'done' },
             { text: "SSJPR (Sole Source) Generated: Validated against Chemistry Department historicals", status: 'done' }
           ]
         };

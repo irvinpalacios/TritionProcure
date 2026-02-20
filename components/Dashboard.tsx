@@ -26,10 +26,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ onStartWorkflow }) => {
         {/* Main Hero Section */}
         <div className="text-center mb-16">
           <h2 className="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
-            Welcome to Triton Procure, your one-stop shop for all procure to pay needs.
+            Welcome to Triton Procure!
           </h2>
           <p className="text-slate-500 text-lg font-medium">
-            What are you trying to do today?
+            Your one-stop shop for all procure to pay needs. What are you trying to do today?
           </p>
         </div>
 

@@ -9,7 +9,7 @@ import {
   ShieldCheck,
   Zap
 } from 'lucide-react';
-import { ProjectInfo } from '../types';
+import { ProjectInfo, Project } from '../types';
 
 interface SidebarProps {
   projectInfo: ProjectInfo;
@@ -52,26 +52,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ projectInfo, activeTab, setAct
 
       <div className="p-6 flex-1 overflow-y-auto">
         <div className="mb-6">
-          <p className="text-[10px] uppercase tracking-widest text-slate-400 font-black mb-3">Active Project</p>
-          <div className="bg-white/5 rounded-xl p-4 border border-white/10 shadow-inner">
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="font-bold text-sm">{projectInfo.name}</h3>
-              <span className="text-[9px] bg-ucsd-blue/40 text-blue-200 px-1.5 py-0.5 rounded font-black tracking-wider">NIH</span>
-            </div>
-            <p className="text-[10px] text-slate-400 mb-4 font-medium italic">Grant #2024-BR-UCSD</p>
-            
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-[10px] font-bold mb-1">
-                <span className="text-slate-300">Budget Utilization</span>
-                <span className="text-ucsd-gold">{projectInfo.utilization}%</span>
-              </div>
-              <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-ucsd-gold shadow-[0_0_10px_rgba(255,205,0,0.5)] transition-all duration-1000 ease-out" 
-                  style={{ width: `${projectInfo.utilization}%` }}
-                />
-              </div>
-            </div>
+          <p className="text-[10px] uppercase tracking-widest text-slate-400 font-black mb-3">Active Projects</p>
+          <div className="space-y-4">
+            {projectInfo.projects.map((project, idx) => (
+              <ProjectCard key={idx} project={project} />
+            ))}
           </div>
         </div>
       </div>
@@ -83,6 +68,37 @@ export const Sidebar: React.FC<SidebarProps> = ({ projectInfo, activeTab, setAct
         </button>
       </div>
     </aside>
+  );
+};
+
+const ProjectCard: React.FC<{ project: Project }> = ({ project }) => {
+  const isNSF = project.funder === 'NSF';
+  
+  return (
+    <div className="bg-white/5 rounded-xl p-4 border border-white/10 shadow-inner group hover:bg-white/10 transition-colors">
+      <div className="flex justify-between items-start mb-2">
+        <h3 className="font-bold text-sm">{project.name}</h3>
+        <span className={`text-[9px] px-1.5 py-0.5 rounded font-black tracking-wider uppercase ${
+          isNSF ? 'bg-cyan-500/30 text-cyan-200' : 'bg-ucsd-blue/40 text-blue-200'
+        }`}>
+          {project.funder}
+        </span>
+      </div>
+      <p className="text-[10px] text-slate-400 mb-4 font-medium italic">{project.grantId}</p>
+      
+      <div className="space-y-1.5">
+        <div className="flex justify-between text-[10px] font-bold mb-1">
+          <span className="text-slate-300">Utilization</span>
+          <span className="text-ucsd-gold">{project.utilization}%</span>
+        </div>
+        <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-ucsd-gold shadow-[0_0_10px_rgba(255,205,0,0.5)] transition-all duration-1000 ease-out" 
+            style={{ width: `${project.utilization}%` }}
+          />
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -53,19 +53,6 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processi
           <div key={msg.id} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
             <div className="max-w-[85%] w-full flex flex-col">
               
-              {/* Agentic Workflow Audit Log - Only for Agent Messages */}
-              {msg.role === 'agent' && msg.thoughtProcess && (
-                <div className="mb-4 animate-in fade-in slide-in-from-top-2 duration-500 w-full">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-slate-400 font-bold text-xs leading-none">_&gt;</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Agentic Workflow (Audit Log)</span>
-                  </div>
-                  <div className="bg-[#101827] text-slate-300 p-5 rounded-xl text-xs font-medium mono leading-relaxed border-l-4 border-ucsd-blue shadow-lg">
-                    {msg.thoughtProcess}
-                  </div>
-                </div>
-              )}
-
               {/* Message Bubble */}
               <div className={`p-6 rounded-2xl shadow-sm border transition-all ${
                 msg.role === 'user' 
