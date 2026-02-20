@@ -73,13 +73,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ projectInfo, activeTab, setAct
 
 const ProjectCard: React.FC<{ project: Project }> = ({ project }) => {
   const isNSF = project.funder === 'NSF';
+  const isGEN = project.funder === 'GEN';
   
   return (
     <div className="bg-white/5 rounded-xl p-4 border border-white/10 shadow-inner group hover:bg-white/10 transition-colors">
       <div className="flex justify-between items-start mb-2">
         <h3 className="font-bold text-sm">{project.name}</h3>
         <span className={`text-[9px] px-1.5 py-0.5 rounded font-black tracking-wider uppercase ${
-          isNSF ? 'bg-cyan-500/30 text-cyan-200' : 'bg-ucsd-blue/40 text-blue-200'
+          isNSF ? 'bg-cyan-500/30 text-cyan-200' : 
+          isGEN ? 'bg-emerald-500/30 text-emerald-200' :
+          'bg-ucsd-blue/40 text-blue-200'
         }`}>
           {project.funder}
         </span>

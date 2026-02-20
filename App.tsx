@@ -27,6 +27,12 @@ const App: React.FC = () => {
         funder: "NSF",
         grantId: "Grant #2025-PHY-NSF",
         utilization: 50
+      },
+      {
+        name: "GEN-FUND-2026",
+        funder: "GEN",
+        grantId: "Core Operating Fund #2026",
+        utilization: 62
       }
     ]
   };
@@ -158,7 +164,7 @@ const App: React.FC = () => {
         if (userInput.toLowerCase().includes("no") || userInput.toLowerCase().includes("own")) {
           return [
             "Fetching Active Grants from Oracle PPM...",
-            "Identifying Eligible Funds (NIH/NSF)",
+            "Identifying Eligible Funds (NIH/NSF/GEN)",
             "Preparing Budget Selection Interface"
           ];
         }
@@ -270,8 +276,8 @@ const App: React.FC = () => {
 
       case Phase.INVENTORY_CHECK:
         if (userInput.toLowerCase().includes("no") || userInput.toLowerCase().includes("own")) {
-          response.content = "Understood. Policy requires selecting a funding source before we can query approved supplier catalogs and pricing. Which active project would you like to use?";
-          response.actions = ["Charge to NIH-BR-2024", "Charge to NSF-PHY-2025"];
+          response.content = "Understood. Institutional compliance policy requires selecting a funding source (PTA) before we can query approved supplier catalogs and pricing. Which active project would you like to use?";
+          response.actions = ["Charge to NIH-BR-2024", "Charge to NSF-PHY-2025", "Charge to GEN-FUND-2026"];
           setPhase(Phase.FUNDING_CHECK);
         } else {
           response.content = "Excellent choice. Initiating Resource Share request with Dr. Smith's lab in Biology. You've saved **$68,500** in project funds.";
@@ -280,7 +286,10 @@ const App: React.FC = () => {
         break;
 
       case Phase.FUNDING_CHECK:
-        const selectedProject = userInput.includes("NIH") ? "NIH-BR-2024" : "NSF-PHY-2025";
+        let selectedProject = "NIH-BR-2024";
+        if (userInput.includes("NSF")) selectedProject = "NSF-PHY-2025";
+        if (userInput.includes("GEN")) selectedProject = "GEN-FUND-2026";
+        
         response.thoughtProcess = "DETECT: Funding source selected. ACTION: Verifying allowable equipment categories on selected grant. QUERYING: Approved institutional supplier catalogs for specified PTA.";
         response.content = `Budget check passed for **${selectedProject}**. Based on this funding source's approved catalogs, I have retrieved the best sourcing options for your specifications:`;
         response.metadata = {
@@ -291,6 +300,7 @@ const App: React.FC = () => {
           ]
         };
         response.actions = ["Select Triton Recommended", "Proceed with Non-Contracted"];
+        setPhase(Phase.COMPARISON);
         break;
 
       case Phase.COMPARISON:
@@ -303,12 +313,14 @@ const App: React.FC = () => {
       case Phase.TAX_EXEMPTION_INIT:
         response.thoughtProcess = "DETECT: Exemption verification initiated. ACTION: Loading CA Board of Equalization Reg 1525.4 criteria.";
         response.content = "Great. To ensure high-compliance and minimize audit risk, I just need to confirm three things:\n\n1. **Useful Life:** Will this equipment be used in your lab for at least one year?\n2. **Usage:** Will it be used 50% or more of the time for R&D activities here in California?\n3. **Exclusion Check:** Is this item strictly for research, or will it be used for administrative or marketing purposes?";
+        response.actions = ["Yes to the first two. Strictly research, no admin use."];
         setPhase(Phase.TAX_EXEMPTION_Q1);
         break;
 
       case Phase.TAX_EXEMPTION_Q1:
         response.thoughtProcess = "EVALUATE: Criteria 1-3 met. ACTION: Verifying NAICS code alignment.";
         response.content = "Perfect. One final compliance check: Our records show your primary NAICS code is 541711 (Biotech R&D). Does this purchase support an activity where you are discovering information that is technological in nature for a new or improved business component?";
+        response.actions = ["Correct. It's part of the new patent project."];
         setPhase(Phase.TAX_EXEMPTION_Q2);
         break;
 
@@ -325,6 +337,8 @@ const App: React.FC = () => {
           type: 'compliance_checklist',
           items: [
             { text: "Price > $5,000 → Flagged as Inventorial Equipment", status: 'done' },
+            { text: "R&D Tax Exemption Applied (CA Partial Sales Tax). SAVED: $2,303", status: 'done' },
+            { text: "Federal Funds Verified", status: 'done' },
             { text: "SSJPR (Sole Source) Generated: Validated against Chemistry Department historicals", status: 'done' }
           ]
         };
