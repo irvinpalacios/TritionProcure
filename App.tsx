@@ -250,17 +250,14 @@ const App: React.FC = () => {
             type: 'email_draft',
             to: 'quotes@abbeypartyrentals.com',
             subject: 'Quote Request - UCSD SIO Forum Event (3/1/2026)',
-            message: `Hi Abbey Team,
-          
-                      I am looking for a quote for a lunch banquet at the **SIO Forum** on **March 1, 2026**. 
-
-                      We are hosting **200 guests** and require the following essentials for delivery:
-                      * 200 White Wood Folding Chairs
-                      * 20 60" Round Tables (Seating 10)
-                      * 4 6' Rectangular Tables (for Catering/Registration)
-                      * 200 Sets of Silverware and Glassware
-
-                      Could you please confirm availability for this date and provide an estimate including delivery and pickup to the La Jolla area?`
+            message: `Hi Abbey Team, 
+            I am looking for a quote for a lunch banquet at the **SIO Forum** on **March 1, 2026**.
+            We are hosting **200 guests** and require the following essentials for delivery:\n\n
+            * 200 White Wood Folding Chairs
+            * 20 60" Round Tables (Seating 10)
+            * 4 6' Rectangular Tables (for Catering/Registration)
+            * 200 Sets of Silverware and Glassware
+            Could you please confirm availability for this date and provide an estimate including delivery and pickup to the La Jolla area?`
           };
           response.actions = ["Send Email", "Edit Email"];
           setPhase(Phase.EVENT_RENTAL_QUOTE);
