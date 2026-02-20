@@ -250,13 +250,25 @@ const App: React.FC = () => {
           break;
 
         case Phase.EVENT_VENUE_CHECK:
-          response.content = "Excellent. Since the nature of the event is **Fundraising**, I've identified the appropriate Triton-Preferred suppliers. Let's start with the rentals, because you need to get a quote from *Abbey Party Rentals* (Agreement Supplier) to generate the requisition. Let me draft that email for you:\n\n> **To:** quotes@abbeypartyrentals.com\n> **Subject:** Quote Request - UCSD SIO Forum Event (3/1/2026)\n> **Message:** Hello, we are requesting a rental quote for an upcoming UCSD event at the SIO Forum on March 1st, 2026. Please let us know what details you need from us to proceed.\n\nWould you like me to send this now?";
+          response.content = "Excellent. Since the nature of the event is **Fundraising**, I've identified the appropriate Triton-Preferred suppliers. Let's start with the rentals, because you need to get a quote from *Abbey Party Rentals* (Agreement Supplier) to generate the requisition. \n\n**Would you like me to send this draft?**";
+          response.metadata = {
+            type: 'email_draft',
+            to: 'quotes@abbeypartyrentals.com',
+            subject: 'Quote Request - UCSD SIO Forum Event (3/1/2026)',
+            message: 'Hello, we are requesting a rental quote for an upcoming UCSD event at the SIO Forum on March 1st, 2026. Please let us know what details you need from us to proceed.'
+          };
           response.actions = ["Send Email", "Edit Email"];
           setPhase(Phase.EVENT_RENTAL_QUOTE);
           break;
 
         case Phase.EVENT_RENTAL_QUOTE:
-          response.content = "✅ **Email sent to Abbey Party Rentals.** A copy has been forwarded to your inbox and CC'd to your department's financial unit approver.\n\nNext, let's handle the valet. *Ace Parking* is our preferred partner. I've drafted the following request:\n\n> **To:** ucsd-events@aceparking.com\n> **Subject:** Valet Quote - SIO Forum (3/1/2026)\n> **Message:** Hello, we need a quote for valet services at the SIO Forum on March 1st, 2026. We will provide a specific guest count shortly.\n\nShall I send this?";
+          response.content = "✅ **Email sent to Abbey Party Rentals.** A copy has been forwarded to your inbox and CC'd to your department's financial unit approver.\n\nNext, let's handle the valet. *Ace Parking* is our preferred partner. \n\n**Shall I send this valet request?**";
+          response.metadata = {
+            type: 'email_draft',
+            to: 'ucsd-events@aceparking.com',
+            subject: 'Valet Quote - SIO Forum (3/1/2026)',
+            message: 'Hello, we need a quote for valet services at the SIO Forum on March 1st, 2026. We will provide a specific guest count shortly.'
+          };
           response.actions = ["Send Email", "Edit Email"];
           setPhase(Phase.EVENT_VALET_QUOTE);
           break;

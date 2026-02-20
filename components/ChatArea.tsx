@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Terminal, ShieldCheck, Zap, ArrowRight, CheckCircle2, Loader2, Circle, Database, Cloud } from 'lucide-react';
+import { Send, Terminal, ShieldCheck, Zap, ArrowRight, CheckCircle2, Loader2, Circle, Database, Cloud, Mail } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Message, ProcessingStep, Phase } from '../types';
 
@@ -105,6 +105,33 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processi
                         <span className="text-xs font-bold text-slate-700">{item.text}</span>
                       </div>
                     ))}
+                  </div>
+                )}
+
+                {msg.metadata?.type === 'email_draft' && (
+                  <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden shadow-sm animate-in fade-in zoom-in-95 duration-300">
+                    <div className="bg-slate-100/80 px-4 py-2 border-b border-slate-200 flex items-center gap-2">
+                      <Mail size={14} className="text-slate-500" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Draft Email</span>
+                    </div>
+                    <div className="p-5 space-y-3">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">To:</span>
+                        <span className="text-xs text-slate-700 font-bold bg-white px-3 py-1.5 rounded-lg border border-slate-100 tracking-tight">{msg.metadata.to}</span>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Subject:</span>
+                        <span className="text-xs text-slate-700 font-bold bg-white px-3 py-1.5 rounded-lg border border-slate-100 tracking-tight">{msg.metadata.subject}</span>
+                      </div>
+                      <div className="mt-2 pt-4 border-t border-slate-200">
+                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter block mb-2">Message Body:</span>
+                        <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-inner">
+                          <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                            {msg.metadata.message}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
