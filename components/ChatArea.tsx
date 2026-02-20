@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Terminal, ShieldCheck, Zap, ArrowRight, CheckCircle2, Loader2, Circle, Database, Cloud, Mail } from 'lucide-react';
+import { Send, Terminal, ShieldCheck, Zap, ArrowRight, CheckCircle2, Loader2, Circle, Database, Cloud, Mail, Bot, User } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Message, ProcessingStep, Phase } from '../types';
 
@@ -50,7 +50,14 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processi
         className="flex-1 overflow-y-auto p-6 md:p-10 space-y-10"
       >
         {messages.map((msg) => (
-          <div key={msg.id} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+          <div key={msg.id} className={`flex w-full gap-4 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            {/* Agent Avatar */}
+            {msg.role === 'agent' && (
+              <div className="w-8 h-8 rounded-full bg-ucsd-navy flex items-center justify-center shrink-0 mt-2 shadow-md">
+                <Bot size={16} className="text-ucsd-gold" />
+              </div>
+            )}
+            
             <div className="max-w-[85%] w-full flex flex-col">
               
               {/* Message Bubble */}
@@ -150,31 +157,26 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processi
                 </div>
               )}
 
-              {/* Message Signature / Meta */}
-              <div className={`mt-2.5 flex items-center gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                {msg.role === 'agent' && (
-                  <>
-                    <span className="text-[10px] text-slate-400 uppercase tracking-[0.15em] font-black">
-                      TRITONPROCURE VERIFIED
-                    </span>
-                    <div className="w-3.5 h-3.5 rounded-full bg-green-50 border border-green-200 flex items-center justify-center">
-                      <ShieldCheck size={10} className="text-green-500" />
-                    </div>
-                  </>
-                )}
-                {msg.role === 'user' && (
-                  <span className="text-[10px] text-slate-400 uppercase tracking-[0.15em] font-black">
-                    {userName}
-                  </span>
-                )}
+              {/* Message Signature / Meta (Updated for Timestamps) */}
+              <div className={`mt-2 flex items-center gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <span className="text-[10px] text-slate-400 font-semibold tracking-wider">
+                  {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
               </div>
             </div>
+
+            {/* User Avatar */}
+            {msg.role === 'user' && (
+              <div className="w-8 h-8 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center shrink-0 mt-2 shadow-sm overflow-hidden">
+                <img src="https://picsum.photos/seed/drpalacios/100/100" alt="User" className="w-full h-full object-cover" />
+              </div>
+            )}
           </div>
         ))}
 
         {/* Processing Indicator */}
         {isTyping && (
-          <div className="flex flex-col items-start max-w-[85%] w-full animate-in fade-in duration-500">
+          <div className="flex flex-col items-start max-w-[85%] w-full animate-in fade-in duration-500 pl-12">
             <div className="flex items-center gap-2 mb-4">
               <Loader2 size={12} className="text-ucsd-blue animate-spin" />
               <span className="text-[10px] font-black uppercase tracking-widest text-ucsd-blue animate-pulse">Agentic Reasoning Active...</span>

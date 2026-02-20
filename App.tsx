@@ -12,6 +12,7 @@ const App: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [currentSteps, setCurrentSteps] = useState<ProcessingStep[]>([]);
   const [workflowType, setWorkflowType] = useState<'procure' | 'event' | null>(null);
+  const [taskCount, setTaskCount] = useState<number>(0);
   
   const projectInfo: ProjectInfo = {
     user: "Dr. Palacios",
@@ -107,7 +108,9 @@ const App: React.FC = () => {
     setMessages(prev => [...prev, userMsg]);
 
     const steps = getStepsForPhase(phase, text);
-    await runProcessingSteps(steps);
+    if (steps.length > 0) {
+      await runProcessingSteps(steps);
+    }
     processNextPhase(text);
   };
 
@@ -200,13 +203,7 @@ const App: React.FC = () => {
           "Verifying Allowability for Spend Category (5000+)"
         ];
       case Phase.COMPARISON:
-        return [
-          "Building Requisition Header in Oracle Finanical Cloud",
-          "Verifying Fund Availability via Oracle PPM",
-          "Executing SSJPR (Sole Source) Generation Engine",
-          "Establishing Secure Handshake with Oracle Financial Cloud...",
-          "Provisioning Requisition..."
-        ];
+        return [];
       case Phase.TAX_EXEMPTION_INIT:
         return [
           "Loading California Tax Board Regulations...",
@@ -220,7 +217,7 @@ const App: React.FC = () => {
       case Phase.TAX_EXEMPTION_Q2:
         return [
           "Generating CDTFA-230-M Certificate...",
-          "Recalculating PO Total...",
+          "Recalculating Total...",
           "Establishing Secure Handshake with Oracle Financial Cloud..."
         ];
       case Phase.COMPLIANCE:
@@ -283,6 +280,7 @@ const App: React.FC = () => {
           if (userInput.toLowerCase().includes("don't") || userInput.toLowerCase().includes("yet") || userInput.toLowerCase().includes("not")) {
             response.content = "Absolutely no problem! I have created a follow-up task on your dashboard to remind you to upload the guest list later. We can still move forward.\n\nTo continue preparing your event profile, which funding source would you like to use for these expenses?";
             response.actions = ["Use General Fund", "Add New Funding Source"];
+            setTaskCount(prev => prev + 1);
             setPhase(Phase.EVENT_FUNDING_CHECK);
           } else {
             response.content = "Excellent. Guest list received and attached to the event profile. \n\nTo continue, which funding source would you like to use for these expenses?";
@@ -334,7 +332,7 @@ const App: React.FC = () => {
 
       case Phase.INVENTORY_CHECK:
         if (userInput.toLowerCase().includes("no") || userInput.toLowerCase().includes("own")) {
-          response.content = "Understood. Institutional compliance policy requires selecting a funding source (PTA) before we can query approved supplier catalogs and pricing. Which active project would you like to use?";
+          response.content = "Understood. Policy requires selecting a funding source before we can query approved supplier catalogs and pricing. Which active project would you like to use?";
           response.actions = ["Charge to NIH-BR-2024", "Charge to NSF-PHY-2025", "Charge to GEN-FUND-2026"];
           setPhase(Phase.FUNDING_CHECK);
         } else {
@@ -371,21 +369,18 @@ const App: React.FC = () => {
       case Phase.TAX_EXEMPTION_INIT:
         response.thoughtProcess = "DETECT: Exemption verification initiated. ACTION: Loading CA Board of Equalization Reg 1525.4 criteria.";
         response.content = "Great. To ensure high-compliance and minimize audit risk, I just need to confirm three things:\n\n1. **Useful Life:** Will this equipment be used in your lab for at least one year?\n2. **Usage:** Will it be used 50% or more of the time for R&D activities here in California?\n3. **Exclusion Check:** Is this item strictly for research, or will it be used for administrative or marketing purposes?";
-        response.actions = ["Yes to the first two. Strictly research, no admin use."];
         setPhase(Phase.TAX_EXEMPTION_Q1);
         break;
 
       case Phase.TAX_EXEMPTION_Q1:
         response.thoughtProcess = "EVALUATE: Criteria 1-3 met. ACTION: Verifying NAICS code alignment.";
         response.content = "Perfect. One final compliance check: Our records show your primary NAICS code is 541711 (Biotech R&D). Does this purchase support an activity where you are discovering information that is technological in nature for a new or improved business component?";
-        response.actions = ["Correct. It's part of the new patent project."];
         setPhase(Phase.TAX_EXEMPTION_Q2);
         break;
 
       case Phase.TAX_EXEMPTION_Q2:
         response.thoughtProcess = "EXECUTE: Generate form CDTFA-230-M. ATTACH: Purchase Order. RECALCULATE: Taxes.";
         response.content = "Eligibility confirmed.\n\n• **Compliance Status:** High (Meets Reg. 1525.4 criteria).\n\n• **Tax Impact:** Applied 3.9375% reduction to the state portion.\n\n• **Action:** I have generated the CDTFA-230-M certificate and attached it to your Requistion Order. The vendor will receive this automatically.\n\nYour estimated total has been updated from $58,500 to $56,197. \n\n **Ready to submit?**";
-        response.actions = ["Submit Requisition"];
         setPhase(Phase.COMPLIANCE);
         break;
 
@@ -395,8 +390,6 @@ const App: React.FC = () => {
           type: 'compliance_checklist',
           items: [
             { text: "Price > $5,000 → Flagged as Inventorial Equipment", status: 'done' },
-            { text: "R&D Tax Exemption Applied (CA Partial Sales Tax). SAVED: $2,303", status: 'done' },
-            { text: "Federal Funds Verified", status: 'done' },
             { text: "SSJPR (Sole Source) Generated: Validated against Chemistry Department historicals", status: 'done' }
           ]
         };
@@ -428,7 +421,7 @@ const App: React.FC = () => {
 
   return (
     <div className="flex h-screen w-full bg-slate-50 overflow-hidden text-slate-900">
-      <Sidebar projectInfo={projectInfo} activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar projectInfo={projectInfo} activeTab={activeTab} setActiveTab={setActiveTab} taskCount={taskCount} />
 
       <main className="flex-1 flex flex-col min-w-0">
         <header className="h-20 border-b border-slate-200 bg-white flex items-center justify-between px-8 shadow-sm z-10 shrink-0">

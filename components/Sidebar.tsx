@@ -15,9 +15,10 @@ interface SidebarProps {
   projectInfo: ProjectInfo;
   activeTab: 'dashboard' | 'chat';
   setActiveTab: (tab: 'dashboard' | 'chat') => void;
+  taskCount: number;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ projectInfo, activeTab, setActiveTab }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ projectInfo, activeTab, setActiveTab, taskCount }) => {
   return (
     <aside className="w-72 bg-ucsd-navy text-white flex flex-col shrink-0">
       <div className="p-6 border-b border-white/10">
@@ -44,9 +45,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ projectInfo, activeTab, setAct
             active={activeTab === 'chat'} 
             onClick={() => setActiveTab('chat')}
           />
-          <NavItem icon={<Box size={20} />} label="Asset Manager" onClick={() => {}} />
-          <NavItem icon={<History size={20} />} label="Order History" badge="3" onClick={() => {}} />
-          <NavItem icon={<ShieldCheck size={20} />} label="Compliance Logs" onClick={() => {}} />
+          <NavItem icon={<History size={20} />} label="Order History" onClick={() => {}} />
+          <NavItem 
+            icon={<ShieldCheck size={20} />} 
+            label="Assigned Tasks" 
+            badge={taskCount > 0 ? taskCount.toString() : undefined}
+            onClick={() => {}} 
+          />
         </nav>
       </div>
 
