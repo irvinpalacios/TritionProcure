@@ -12,7 +12,11 @@ export enum Phase {
   EVENT_SPEAKER_FORM = 8,
   EVENT_SPEAKER_FINALIZE = 9,
   // New Procurement Phase
-  FUNDING_CHECK = 10
+  FUNDING_CHECK = 10,
+  // Tax Exemption Phases
+  TAX_EXEMPTION_INIT = 11,
+  TAX_EXEMPTION_Q1 = 12,
+  TAX_EXEMPTION_Q2 = 13
 }
 
 export interface ProcessingStep {
