@@ -317,7 +317,7 @@ const App: React.FC = () => {
 
       case Phase.TAX_EXEMPTION_Q2:
         response.thoughtProcess = "EXECUTE: Generate form CDTFA-230-M. ATTACH: Purchase Order. RECALCULATE: Taxes.";
-        response.content = "Eligibility confirmed.\n\n• **Compliance Status:** High (Meets Reg. 1525.4 criteria).\n• **Tax Impact:** Applied 3.9375% reduction to the state portion.\n• **Action:** I have generated the CDTFA-230-M certificate and attached it to your Purchase Order. The vendor will receive this automatically.\n\nYour estimated total has been updated from $58,500 to $56,197. Ready to submit?";
+        response.content = "Eligibility confirmed.\n\n• **Compliance Status:** High (Meets Reg. 1525.4 criteria).\n\n• **Tax Impact:** Applied 3.9375% reduction to the state portion.\n\n• **Action:** I have generated the CDTFA-230-M certificate and attached it to your Requistion Order. The vendor will receive this automatically.\n\nYour estimated total has been updated from $58,500 to $56,197. \n\n **Ready to submit?**";
         response.actions = ["Submit Requisition"];
         setPhase(Phase.COMPLIANCE);
         break;
@@ -328,8 +328,6 @@ const App: React.FC = () => {
           type: 'compliance_checklist',
           items: [
             { text: "Price > $5,000 → Flagged as Inventorial Equipment", status: 'done' },
-            { text: "R&D Tax Exemption Applied (CA Partial Sales Tax). SAVED: $31,500", status: 'done' },
-            { text: "Federal Funds Verified", status: 'done' },
             { text: "SSJPR (Sole Source) Generated: Validated against Chemistry Department historicals", status: 'done' }
           ]
         };
