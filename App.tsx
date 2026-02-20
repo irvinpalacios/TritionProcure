@@ -127,6 +127,23 @@ const App: React.FC = () => {
             "Identifying Eligible Entertainment Funds",
             "Preparing Budget Selection Interface"
           ];
+        case Phase.EVENT_RENTAL_QUOTE:
+          return [
+            "Transmitting to Abbey Party Rentals...",
+            "CC'ing Financial Unit Approver...",
+            "Logging outbound communication..."
+          ];
+        case Phase.EVENT_VALET_QUOTE:
+          return [
+            "Transmitting to Ace Parking...",
+            "CC'ing Financial Unit Approver...",
+            "Logging outbound communication..."
+          ];
+        case Phase.EVENT_CATERING_CHECK:
+          return [
+            "Creating follow-up task for Guest List...",
+            "Syncing with Dashboard Reminders..."
+          ];
         case Phase.EVENT_FUNDING_CHECK:
           return [
             "Applying Entertainment Policy (BUS-79)",
@@ -233,14 +250,33 @@ const App: React.FC = () => {
           break;
 
         case Phase.EVENT_VENUE_CHECK:
-          response.content = "Excellent. Since the nature of the event is **Fundraising** for Employees and Donors, I've identified the appropriate Triton-Preferred suppliers and policy requirements:\n\n" +
-            "• **Rentals**: Use *Abbey Party Rentals* (Agreement Supplier). Reach out for a quote, then I'll generate the PO.\n\n" +
-            "• **Valets**: Use *Ace Parking* (Preferred Partner). Request a quote for the specific guest count.\n\n" +
-            "• **Catering**: Redirect to **Saltaire**. \n\n" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;*Note: Current meal maximums are $31 (Breakfast), $54 (Lunch), $94 (Dinner). Ensure guest list is attached for donor compliance.*\n\n\n" +
-            "**Which funding source would you like to use for this event?**";
-          response.actions = ["Use General Fund", "Add New Funding Source"];
-          setPhase(Phase.EVENT_FUNDING_CHECK);
+          response.content = "Excellent. Since the nature of the event is **Fundraising**, I've identified the appropriate Triton-Preferred suppliers. Let's start with the rentals, because you need to get a quote from *Abbey Party Rentals* (Agreement Supplier) to generate the requisition. Let me draft that email for you:\n\n> **To:** quotes@abbeypartyrentals.com\n> **Subject:** Quote Request - UCSD SIO Forum Event (3/1/2026)\n> **Message:** Hello, we are requesting a rental quote for an upcoming UCSD event at the SIO Forum on March 1st, 2026. Please let us know what details you need from us to proceed.\n\nWould you like me to send this now?";
+          response.actions = ["Send Email", "Edit Email"];
+          setPhase(Phase.EVENT_RENTAL_QUOTE);
+          break;
+
+        case Phase.EVENT_RENTAL_QUOTE:
+          response.content = "✅ **Email sent to Abbey Party Rentals.** A copy has been forwarded to your inbox and CC'd to your department's financial unit approver.\n\nNext, let's handle the valet. *Ace Parking* is our preferred partner. I've drafted the following request:\n\n> **To:** ucsd-events@aceparking.com\n> **Subject:** Valet Quote - SIO Forum (3/1/2026)\n> **Message:** Hello, we need a quote for valet services at the SIO Forum on March 1st, 2026. We will provide a specific guest count shortly.\n\nShall I send this?";
+          response.actions = ["Send Email", "Edit Email"];
+          setPhase(Phase.EVENT_VALET_QUOTE);
+          break;
+
+        case Phase.EVENT_VALET_QUOTE:
+          response.content = "✅ **Email sent to Ace Parking.** CCs have been applied.\n\nFinally, for catering, we will use *Saltaire*. Current meal maximums are $31 (Breakfast), $54 (Lunch), and $94 (Dinner). To proceed with Saltaire and ensure donor compliance, I need you to upload the preliminary guest list. Do you have that ready?";
+          response.actions = ["I don't have it yet", "Upload Guest List"];
+          setPhase(Phase.EVENT_CATERING_CHECK);
+          break;
+
+        case Phase.EVENT_CATERING_CHECK:
+          if (userInput.toLowerCase().includes("don't") || userInput.toLowerCase().includes("yet") || userInput.toLowerCase().includes("not")) {
+            response.content = "Absolutely no problem! I have created a follow-up task on your dashboard to remind you to upload the guest list later. We can still move forward.\n\nTo continue preparing your event profile, which funding source would you like to use for these expenses?";
+            response.actions = ["Use General Fund", "Add New Funding Source"];
+            setPhase(Phase.EVENT_FUNDING_CHECK);
+          } else {
+            response.content = "Excellent. Guest list received and attached to the event profile. \n\nTo continue, which funding source would you like to use for these expenses?";
+            response.actions = ["Use General Fund", "Add New Funding Source"];
+            setPhase(Phase.EVENT_FUNDING_CHECK);
+          }
           break;
 
         case Phase.EVENT_FUNDING_CHECK:
