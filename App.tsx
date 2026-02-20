@@ -120,15 +120,13 @@ const App: React.FC = () => {
         case Phase.IDLE:
           return [
             "Parsing Event Requirements...",
-            "Validating SIO Forum Facility Policies",
-            "Cross-referencing Venue Availability",
-            "Checking Risk Management Thresholds"
+            "Validating SIO Forum Facility Policies...",
+            "Cross-referencing Venue Availability...",
+            "Checking Risk Management Thresholds..."
           ];
         case Phase.EVENT_VENUE_CHECK:
           return [
-            "Fetching Active Grants from Oracle PPM...",
-            "Identifying Eligible Entertainment Funds",
-            "Preparing Budget Selection Interface"
+            "Preparing Event Integrations..."
           ];
         case Phase.EVENT_RENTAL_QUOTE:
           return [
@@ -149,22 +147,22 @@ const App: React.FC = () => {
           ];
         case Phase.EVENT_FUNDING_CHECK:
           return [
-            "Applying Entertainment Policy (BUS-79)",
-            "Querying Agreement Suppliers (Rentals/Valet)",
-            "Checking Catering Compliance (Saltaire Partnership)",
+            "Applying Entertainment Policy (BUS-79)...",
+            "Querying Agreement Suppliers (Rentals/Valet)...",
+            "Checking Catering Compliance (Saltaire Partnership)...",
             "Calculating Per-Person Maximums"
           ];
         case Phase.EVENT_POLICY_GUIDANCE:
           return [
-            "Verifying Speaker Engagement Criteria",
-            "Preparing Payment Request Template",
-            "Mapping Documentation Requirements (Invoice/W9)"
+            "Verifying Speaker Engagement Criteria...",
+            "Preparing Payment Request Template...",
+            "Mapping Documentation Requirements (Invoice/W9)..."
           ];
         case Phase.EVENT_SPEAKER_FORM:
           return [
-            "Finalizing Payment Request for Oracle",
-            "Uploading Documentation to Financial Cloud",
-            "Routing to Departmental Approval Queue"
+            "Finalizing Payment Request for Oracle...",
+            "Uploading Documentation to Financial Cloud...",
+            "Routing to Departmental Approval Queue..."
           ];
         default:
           return ["Optimizing Workflow...", "Syncing with Oracle ERP"];
@@ -175,23 +173,23 @@ const App: React.FC = () => {
       case Phase.IDLE:
         return [
           "Parsing Procurement Intent...",
-          "Identifying Category (High-Value Research)",
-          "Cross-referencing Oracle Commodity Codes",
-          "Flagging Missing Technical Specs"
+          "Identifying Category (High-Value Research)...",
+          "Cross-referencing Oracle Commodity Codes...",
+          "Flagging Missing Technical Specs..."
         ];
       case Phase.SPEC_CHECK:
         return [
           "Querying CoreBio Asset Registry...",
-          "Scanning York Hall Shared Equipment Database",
-          "Analyzing Utilization Data",
-          "Calculating Sustainability Parity Score"
+          "Scanning York Hall Shared Equipment Database...",
+          "Analyzing Utilization Data...",
+          "Calculating Sustainability Parity Score..."
         ];
       case Phase.INVENTORY_CHECK:
         if (userInput.toLowerCase().includes("no") || userInput.toLowerCase().includes("own")) {
           return [
             "Fetching Active Grants from Oracle PPM...",
-            "Identifying Eligible Funds (NIH/NSF/GEN)",
-            "Preparing Budget Selection Interface"
+            "Identifying Eligible Funds (NIH/NSF/GEN)...",
+            "Preparing Budget Selection Interface..."
           ];
         }
         return ["Rerouting to Shared Asset Protocol...", "Contacting Resource Custodian"];
@@ -200,7 +198,7 @@ const App: React.FC = () => {
           "Accessing Oracle PPM Funding Module...",
           "Validating Budget Availability...",
           "Checking Grant Expiration Dates...",
-          "Verifying Allowability for Spend Category (5000+)"
+          "Verifying Allowability for Spend Category..."
         ];
       case Phase.COMPARISON:
         return [];
@@ -252,7 +250,17 @@ const App: React.FC = () => {
             type: 'email_draft',
             to: 'quotes@abbeypartyrentals.com',
             subject: 'Quote Request - UCSD SIO Forum Event (3/1/2026)',
-            message: 'Hello, we are requesting a rental quote for an upcoming UCSD event at the SIO Forum on March 1st, 2026. Please let us know what details you need from us to proceed.'
+            message: `Hi Abbey Team,
+          
+                      I am looking for a quote for a lunch banquet at the **SIO Forum** on **March 1, 2026**. 
+
+                      We are hosting **200 guests** and require the following essentials for delivery:
+                      * 200 White Wood Folding Chairs
+                      * 20 60" Round Tables (Seating 10)
+                      * 4 6' Rectangular Tables (for Catering/Registration)
+                      * 200 Sets of Silverware and Glassware
+
+                      Could you please confirm availability for this date and provide an estimate including delivery and pickup to the La Jolla area?`
           };
           response.actions = ["Send Email", "Edit Email"];
           setPhase(Phase.EVENT_RENTAL_QUOTE);
@@ -264,7 +272,16 @@ const App: React.FC = () => {
             type: 'email_draft',
             to: 'ucsd-events@aceparking.com',
             subject: 'Valet Quote - SIO Forum (3/1/2026)',
-            message: 'Hello, we need a quote for valet services at the SIO Forum on March 1st, 2026. We will provide a specific guest count shortly.'
+            message: `Hi Ace Team,
+
+                      I need a valet staffing quote for a lunch banquet at the **SIO Forum** on **March 1, 2026**.
+
+                      * **Guest Count:** 200 people (Approx. 80-100 cars)
+                      * **Estimated Hours:** 11:00 AM – 2:30 PM
+                      * **Type:** Hosted (Complimentary for guests)
+                      * **Parking:** Using the adjacent SIO parking lot 
+
+                      Please provide an estimate for the necessary number of attendants to ensure a smooth arrival and departure.`
           };
           response.actions = ["Send Email", "Edit Email"];
           setPhase(Phase.EVENT_VALET_QUOTE);

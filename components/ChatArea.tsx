@@ -15,6 +15,7 @@ interface ChatAreaProps {
 
 export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processingSteps, phase, userName, onSendMessage }) => {
   const [inputValue, setInputValue] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -31,11 +32,29 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processi
     return () => clearTimeout(timer);
   }, [messages, isTyping, processingSteps]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (inputValue.trim()) {
+  const handleSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (inputValue.trim() && !isTyping) {
       onSendMessage(inputValue);
       setInputValue('');
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+      }
+    }
+  };
+
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputValue(e.target.value);
+    // Reset height to auto to shrink if text is deleted, then set to scrollHeight
+    e.target.style.height = 'auto';
+    e.target.style.height = `${e.target.scrollHeight}px`;
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Submit on Enter (without Shift)
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
     }
   };
 
@@ -236,17 +255,20 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processi
 
       {/* Input Bar */}
       <div className="p-6 border-t border-slate-100 bg-white/80 backdrop-blur-md shrink-0">
-        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto flex items-center gap-4">
+        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto flex items-end gap-4">
           <div className="flex-1 relative">
-            <input 
-              type="text" 
+            <textarea 
+              ref={textareaRef}
               disabled={isTyping}
               value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              onChange={handleInput}
+              onKeyDown={handleKeyDown}
+              rows={1}
+              style={{ maxHeight: '200px', resize: 'none' }}
               placeholder={isTyping ? "TritonProcure is orchestrating..." : "Ask TritonProcure about your purchase..."}
-              className={`w-full bg-slate-100/80 border border-slate-200 rounded-2xl px-6 py-4 pr-16 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-ucsd-blue/20 focus:bg-white transition-all shadow-sm ${isTyping ? 'cursor-not-allowed opacity-50' : ''}`}
+              className={`w-full bg-slate-100/80 border border-slate-200 rounded-2xl px-6 py-4 pr-24 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-ucsd-blue/20 focus:bg-white transition-all shadow-sm overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] ${isTyping ? 'cursor-not-allowed opacity-50' : ''}`}
             />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 hidden md:flex items-center gap-2 text-slate-400">
+            <div className="absolute right-4 bottom-4 hidden md:flex items-center gap-2 text-slate-400">
                <span className="text-[9px] font-bold border border-slate-200 rounded px-1.5 py-0.5 bg-white shadow-xs uppercase tracking-tighter">ENTER</span>
             </div>
           </div>
