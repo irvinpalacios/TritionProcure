@@ -16,7 +16,9 @@ export enum Phase {
   // Tax Exemption Phases
   TAX_EXEMPTION_INIT = 11,
   TAX_EXEMPTION_Q1 = 12,
-  TAX_EXEMPTION_Q2 = 13
+  TAX_EXEMPTION_Q2 = 13,
+  // New Event Phase
+  EVENT_FUNDING_CHECK = 14
 }
 
 export interface ProcessingStep {

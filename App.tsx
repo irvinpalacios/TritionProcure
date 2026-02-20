@@ -81,7 +81,7 @@ const App: React.FC = () => {
       }));
       
       const isLastStep = i === steps.length - 1;
-      const isOracleIntegration = (phase === Phase.COMPLIANCE || phase === Phase.EVENT_SPEAKER_FINALIZE || phase === Phase.FUNDING_CHECK || phase === Phase.TAX_EXEMPTION_Q2) && isLastStep;
+      const isOracleIntegration = (phase === Phase.COMPLIANCE || phase === Phase.EVENT_SPEAKER_FINALIZE || phase === Phase.FUNDING_CHECK || phase === Phase.TAX_EXEMPTION_Q2 || phase === Phase.EVENT_FUNDING_CHECK) && isLastStep;
       
       const delay = isOracleIntegration 
         ? 4500 
@@ -122,6 +122,12 @@ const App: React.FC = () => {
             "Checking Risk Management Thresholds"
           ];
         case Phase.EVENT_VENUE_CHECK:
+          return [
+            "Fetching Active Grants from Oracle PPM...",
+            "Identifying Eligible Entertainment Funds",
+            "Preparing Budget Selection Interface"
+          ];
+        case Phase.EVENT_FUNDING_CHECK:
           return [
             "Applying Entertainment Policy (BUS-79)",
             "Querying Agreement Suppliers (Rentals/Valet)",
@@ -230,28 +236,32 @@ const App: React.FC = () => {
           response.content = "Excellent. Since the nature of the event is **Fundraising** for Employees and Donors, I've identified the appropriate Triton-Preferred suppliers and policy requirements:\n\n" +
             "• **Rentals**: Use *Abbey Party Rentals* (Agreement Supplier). Reach out for a quote, then I'll generate the PO.\n\n" +
             "• **Valets**: Use *Ace Parking* (Preferred Partner). Request a quote for the specific guest count.\n\n" +
-            "• **Catering**: Redirect to **Saltaire**. \n\n&nbsp;&nbsp;&nbsp;&nbsp;*Note: Current meal maximums are $31 (Breakfast), $54 (Lunch), $94 (Dinner). Ensure guest list is attached for donor compliance.*\n\n" +
-            "• **Speaker**: To compensate your speaker, we will create a **Payment Request**.\n\n\n" +
-            "Are you ready to draft your payment request for the speaker?";
-          response.actions = ["Start Payment Request", "Not yet"];
+            "• **Catering**: Redirect to **Saltaire**. \n\n" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;*Note: Current meal maximums are $31 (Breakfast), $54 (Lunch), $94 (Dinner). Ensure guest list is attached for donor compliance.*\n\n\n" +
+            "**Which funding source would you like to use for this event?**";
+          response.actions = ["Use General Fund", "Add New Funding Source"];
+          setPhase(Phase.EVENT_FUNDING_CHECK);
+          break;
+
+        case Phase.EVENT_FUNDING_CHECK:
+          response.content = "Budget check passed for the **General Fund**. To compensate your speaker, we will create a Payment Request. I've noted the funding source. \n\n**Who is the speaker?**";
           setPhase(Phase.EVENT_POLICY_GUIDANCE);
           break;
 
         case Phase.EVENT_POLICY_GUIDANCE:
-          if (userInput.toLowerCase().includes("start")) {
-            response.content = "Great. Since I already have the event details for **SIO** on **3/1/2026**, I just need to know:\n\n" +
-              "1. **Who is the speaker?**\n" +
-              "I'll also need you to attach the invoice or appropriate documentation once we finalize.";
-            setPhase(Phase.EVENT_SPEAKER_FORM);
+          response.content = `Great. Since I already have the event details for **SIO** on **3/1/2026**, and you've identified the speaker as **${userInput}**, I've prepared the draft. I'll need you to attach the invoice or appropriate documentation once we finalize.\n\nReady to draft your payment request for the speaker?`;
+          response.actions = ["Start Payment Request", "Not yet"];
+          setPhase(Phase.EVENT_SPEAKER_FORM);
+          break;
+
+        case Phase.EVENT_SPEAKER_FORM:
+          if (userInput.toLowerCase().includes("start") || phase === Phase.EVENT_SPEAKER_FORM) {
+            response.content = "✅ **Payment Request successfully drafted in Oracle Financial Cloud.**\n\nI have populated the location (SIO Forum) and the date from our records. The invoice has been attached for processing. \n\n**Invoice #00236823** is now routing to your Departmental Approver.";
+            setPhase(Phase.FINISHED);
           } else {
             response.content = "No problem. I've saved these supplier recommendations to your dashboard under 'Draft Events'. Let me know when you're ready to proceed.";
             setPhase(Phase.FINISHED);
           }
-          break;
-
-        case Phase.EVENT_SPEAKER_FORM:
-          response.content = "✅ **Payment Request successfully drafted in Oracle Financial Cloud.**\n\nI have populated the location (SIO Forum) and the date from our records. The invoice has been attached for processing. \n\n**Invoice #00236823** is now routing to your Departmental Approver.";
-          setPhase(Phase.FINISHED);
           break;
 
         default:
