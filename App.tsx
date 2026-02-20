@@ -114,22 +114,14 @@ const App: React.FC = () => {
             "Syncing with Dashboard Reminders..."
           ];
         case Phase.EVENT_FUNDING_CHECK:
-          return [
-            "Accessing Oracle PPM Funding Module...",
-            "Validating Budget Availability...",
-          ];
+          return [];
         case Phase.EVENT_POLICY_GUIDANCE:
           return [
-            "Verifying Speaker Engagement Criteria...",
-            "Preparing Payment Request Template...",
-            "Mapping Documentation Requirements (Invoice/W9)..."
+            "Drafting Payment Request for Oracle Financial Cloud...",
+            "Setting Dashboard Reminders for Guest List...",
+            "Establishing Inbox Monitors for Vendor Quotes..."
           ];
-        case Phase.EVENT_SPEAKER_FORM:
-          return [
-            "Finalizing Payment Request for Oracle...",
-            "Uploading Documentation to Financial Cloud...",
-            "Routing to Departmental Approval Queue..."
-          ];
+        // Removed Phase.EVENT_SPEAKER_FORM entirely
         default:
           return ["Optimizing Workflow...", "Syncing with Oracle ERP"];
       }
@@ -293,20 +285,11 @@ ${projectInfo.user}`
           break;
 
         case Phase.EVENT_POLICY_GUIDANCE:
-          response.content = `Great. Since I already have the event details for **SIO** on **3/1/2026**, and you've identified the speaker as **${userInput}**, I've prepared the draft. I'll need you to attach the invoice or appropriate documentation once we finalize.\n\nReady to draft your payment request for the speaker?`;
-          response.actions = ["Start Payment Request", "Not yet"];
-          setPhase(Phase.EVENT_SPEAKER_FORM);
+          response.content = `Excellent. I have everything I need to create the payment request for **${userInput}**, and I am submitting it now to your Departmental Approver.\n\nAs a reminder, I've added a task to your dashboard and will nudge you in a few days to upload the finalized guest list for Saltaire Catering. \n\nI am also actively monitoring our inbox. Once Abbey Party Rentals and Ace Parking return their quotes, I will automatically retrieve them and finalize those requisitions to secure all your event elements.\n\n**You are all set for now!** I'll handle these next steps in the background. If you have any other questions, just let me know. Otherwise, I look forward to collaborating with you to finalize these details!`;
+          // Explicitly removing response.actions to prevent buttons from rendering
+          setPhase(Phase.FINISHED);
           break;
-
-        case Phase.EVENT_SPEAKER_FORM:
-          if (userInput.toLowerCase().includes("start") || currentPhase === Phase.EVENT_SPEAKER_FORM) {
-            response.content = "✅ **Payment Request successfully drafted in Oracle Financial Cloud.**\n\nI have populated the location (SIO Forum) and the date from our records. The invoice has been attached for processing. \n\n**Invoice #00236823** is now routing to your Departmental Approver.";
-            setPhase(Phase.FINISHED);
-          } else {
-            response.content = "No problem. I've saved these supplier recommendations to your dashboard under 'Draft Events'. Let me know when you're ready to proceed.";
-            setPhase(Phase.FINISHED);
-          }
-          break;
+        // Removed Phase.EVENT_SPEAKER_FORM entirely
 
         default:
           response.content = "The event workflow is complete. How else can I assist with your planning today?";
