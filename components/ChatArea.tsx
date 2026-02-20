@@ -153,8 +153,8 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processi
                       </div>
                     </div>
                     {/* Email Body */}
-                    <div className="p-5 text-sm text-slate-700 leading-relaxed bg-white">
-                      {msg.metadata.message}
+                    <div className="p-5 text-sm text-slate-700 leading-relaxed bg-white prose prose-sm max-w-none prose-slate">
+                      <ReactMarkdown>{msg.metadata.message}</ReactMarkdown>
                     </div>
                   </div>
                 )}
