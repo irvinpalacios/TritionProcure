@@ -270,11 +270,11 @@ const App: React.FC = () => {
 
       case Phase.INVENTORY_CHECK:
         if (userInput.toLowerCase().includes("no") || userInput.toLowerCase().includes("own")) {
-          response.content = "Understood. Institutional compliance policy requires selecting a funding source (PTA) before we can query approved supplier catalogs and pricing. Which active project would you like to use?";
+          response.content = "Understood. Policy requires selecting a funding source before we can query approved supplier catalogs and pricing. Which active project would you like to use?";
           response.actions = ["Charge to NIH-BR-2024", "Charge to NSF-PHY-2025"];
           setPhase(Phase.FUNDING_CHECK);
         } else {
-          response.content = "Excellent choice. Initiating Resource Share request with Dr. Smith's lab in Biology. You've saved **$195,000** in project funds.";
+          response.content = "Excellent choice. Initiating Resource Share request with Dr. Smith's lab in Biology. You've saved **$68,500** in project funds.";
           setPhase(Phase.FINISHED);
         }
         break;
@@ -291,7 +291,6 @@ const App: React.FC = () => {
           ]
         };
         response.actions = ["Select Triton Recommended", "Proceed with Non-Contracted"];
-        setPhase(Phase.COMPARISON);
         break;
 
       case Phase.COMPARISON:
@@ -304,14 +303,12 @@ const App: React.FC = () => {
       case Phase.TAX_EXEMPTION_INIT:
         response.thoughtProcess = "DETECT: Exemption verification initiated. ACTION: Loading CA Board of Equalization Reg 1525.4 criteria.";
         response.content = "Great. To ensure high-compliance and minimize audit risk, I just need to confirm three things:\n\n1. **Useful Life:** Will this equipment be used in your lab for at least one year?\n2. **Usage:** Will it be used 50% or more of the time for R&D activities here in California?\n3. **Exclusion Check:** Is this item strictly for research, or will it be used for administrative or marketing purposes?";
-        response.actions = ["Yes to the first two. Strictly research, no admin use."];
         setPhase(Phase.TAX_EXEMPTION_Q1);
         break;
 
       case Phase.TAX_EXEMPTION_Q1:
         response.thoughtProcess = "EVALUATE: Criteria 1-3 met. ACTION: Verifying NAICS code alignment.";
         response.content = "Perfect. One final compliance check: Our records show your primary NAICS code is 541711 (Biotech R&D). Does this purchase support an activity where you are discovering information that is technological in nature for a new or improved business component?";
-        response.actions = ["Correct. It's part of the new patent project."];
         setPhase(Phase.TAX_EXEMPTION_Q2);
         break;
 

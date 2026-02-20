@@ -26,7 +26,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ projectInfo, activeTab, setAct
             <Zap size={20} className="text-ucsd-navy fill-ucsd-navy" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-black tracking-tighter leading-none">TritonProcure</span>
+            <span className="text-xl font-black tracking-tighter leading-none">Triton Procure</span>
             <span className="text-[9px] font-bold text-ucsd-gold uppercase tracking-[0.2em] mt-1 opacity-80">Agentic AI</span>
           </div>
         </div>

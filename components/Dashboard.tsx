@@ -51,7 +51,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onStartWorkflow }) => {
               Purchase lab equipment, office supplies, software, or professional services. Includes Oracle compliance checks.
             </p>
             <div className="flex items-center gap-2 text-slate-400 group-hover:text-ucsd-blue font-bold text-xs tracking-widest uppercase transition-colors">
-              Start Workflow <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              Start <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
 
@@ -71,7 +71,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onStartWorkflow }) => {
               Organize conferences, fundraisers, or team meetings. Manage venues, catering, speakers, and entertainment policy.
             </p>
             <div className="flex items-center gap-2 text-slate-400 group-hover:text-purple-500 font-bold text-xs tracking-widest uppercase transition-colors">
-              Start Workflow <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              Start <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
         </div>
