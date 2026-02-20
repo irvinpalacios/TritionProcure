@@ -250,7 +250,7 @@ const App: React.FC = () => {
           break;
 
         case Phase.EVENT_VENUE_CHECK:
-          response.content = "Excellent. Since the nature of the event is **Fundraising**, I've identified the appropriate Triton-Preferred suppliers. Let's start with the rentals, because you need to get a quote from *Abbey Party Rentals* (Agreement Supplier) to generate the requisition. \n\n**Would you like me to send this draft?**";
+          response.content = "Excellent. Since the nature of the event is **Fundraising**, I've identified the appropriate Triton-Preferred suppliers.\n\nLet's start with the rentals. You need to get a quote from *Abbey Party Rentals* (Agreement Supplier) to generate the requisition. I've drafted the following request for you:";
           response.metadata = {
             type: 'email_draft',
             to: 'quotes@abbeypartyrentals.com',
@@ -262,7 +262,7 @@ const App: React.FC = () => {
           break;
 
         case Phase.EVENT_RENTAL_QUOTE:
-          response.content = "✅ **Email sent to Abbey Party Rentals.** A copy has been forwarded to your inbox and CC'd to your department's financial unit approver.\n\nNext, let's handle the valet. *Ace Parking* is our preferred partner. \n\n**Shall I send this valet request?**";
+          response.content = "✅ **Email sent to Abbey Party Rentals.** A copy has been forwarded to your inbox and CC'd to your department's financial unit approver.\n\nNext, let's handle the valet. *Ace Parking* is our preferred partner. I've drafted the following request:";
           response.metadata = {
             type: 'email_draft',
             to: 'ucsd-events@aceparking.com',
@@ -274,7 +274,7 @@ const App: React.FC = () => {
           break;
 
         case Phase.EVENT_VALET_QUOTE:
-          response.content = "✅ **Email sent to Ace Parking.** CCs have been applied.\n\nFinally, for catering, we will use *Saltaire*. Current meal maximums are $31 (Breakfast), $54 (Lunch), and $94 (Dinner). To proceed with Saltaire and ensure donor compliance, I need you to upload the preliminary guest list. Do you have that ready?";
+          response.content = "✅ **Email sent to Ace Parking.** CCs have been applied.\n\nFinally, for catering, we will use *Saltaire*. Current meal maximums are $31 (Breakfast), $54 (Lunch), and $94 (Dinner).\n\nTo proceed with Saltaire and ensure donor compliance, I need you to upload the preliminary guest list. Do you have that ready?";
           response.actions = ["I don't have it yet", "Upload Guest List"];
           setPhase(Phase.EVENT_CATERING_CHECK);
           break;
