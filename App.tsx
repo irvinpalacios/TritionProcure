@@ -251,13 +251,18 @@ const App: React.FC = () => {
             to: 'quotes@abbeypartyrentals.com',
             subject: 'Quote Request - UCSD SIO Forum Event (3/1/2026)',
             message: `Hi Abbey Team, 
-            I am looking for a quote for a lunch banquet at the **SIO Forum** on **March 1, 2026**.
-            We are hosting **200 guests** and require the following essentials for delivery:\n\n
-            * 200 White Wood Folding Chairs
-            * 20 60" Round Tables (Seating 10)
-            * 4 6' Rectangular Tables (for Catering/Registration)
-            * 200 Sets of Silverware and Glassware
-            Could you please confirm availability for this date and provide an estimate including delivery and pickup to the La Jolla area?`
+
+I am looking for a quote for a lunch banquet at the **SIO Forum** on **March 1, 2026**. We are hosting **200 guests** and require the following essentials for delivery:
+
+* 200 White Wood Folding Chairs
+* 20 60" Round Tables (Seating 10)
+* 4 6' Rectangular Tables (for Catering/Registration)
+* 200 Sets of Silverware and Glassware
+
+Could you please confirm availability for this date and provide an estimate including delivery and pickup to the La Jolla area?
+
+Thank you,
+${projectInfo.user}`
           };
           response.actions = ["Send Email", "Edit Email"];
           setPhase(Phase.EVENT_RENTAL_QUOTE);
@@ -271,14 +276,17 @@ const App: React.FC = () => {
             subject: 'Valet Quote - SIO Forum (3/1/2026)',
             message: `Hi Ace Team,
 
-                      I need a valet staffing quote for a lunch banquet at the **SIO Forum** on **March 1, 2026**.
+I need a valet staffing quote for a lunch banquet at the **SIO Forum** on **March 1, 2026**.
 
-                      * **Guest Count:** 200 people (Approx. 80-100 cars)
-                      * **Estimated Hours:** 11:00 AM – 2:30 PM
-                      * **Type:** Hosted (Complimentary for guests)
-                      * **Parking:** Using the adjacent SIO parking lot 
+* **Guest Count:** 200 people (Approx. 80-100 cars)
+* **Estimated Hours:** 11:00 AM – 2:30 PM
+* **Type:** Hosted (Complimentary for guests)
+* **Parking:** Using the adjacent SIO parking lot 
 
-                      Please provide an estimate for the necessary number of attendants to ensure a smooth arrival and departure.`
+Please provide an estimate for the necessary number of attendants to ensure a smooth arrival and departure.
+
+Thank you,
+${projectInfo.user}`
           };
           response.actions = ["Send Email", "Edit Email"];
           setPhase(Phase.EVENT_VALET_QUOTE);
