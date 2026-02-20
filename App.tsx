@@ -38,33 +38,19 @@ const App: React.FC = () => {
     ]
   };
 
-  const startWorkflow = (type: 'procure' | 'event') => {
-    setWorkflowType(type);
-    setActiveTab('chat');
-    setPhase(Phase.IDLE);
-    
-    let greeting: Message;
-    if (type === 'procure') {
-      greeting = {
-        id: 'init-procure',
-        role: 'agent',
-        content: "Hello Dr. Palacios. I am **TritonProcure**, your SmartProcure AI Agent at UC San Diego. I am ready to assist with your procurement needs. How can I help you today?",
-        actions: ["Place An Order", "Check Order Status", "Other"],
-        timestamp: new Date()
-      };
-    } else {
-      greeting = {
-        id: 'init-event',
-        role: 'agent',
-        content: "Hello Dr. Palacios. I am ready to help you **Plan an Event**. I'll manage venues, catering, and ensure we stay within entertainment policy. What are we organizing today?",
-        actions: ["Department Symposium", "Guest Speaker Lunch", "Retreat Planning"],
-        timestamp: new Date()
-      };
+  // State Reset when returning to dashboard
+  useEffect(() => {
+    if (activeTab === 'dashboard') {
+      setMessages([]);
+      setPhase(Phase.IDLE);
+      setWorkflowType(null);
+      setTaskCount(0);
+      setCurrentSteps([]);
+      setIsTyping(false);
     }
-    setMessages([greeting]);
-  };
+  }, [activeTab]);
 
-  const runProcessingSteps = async (steps: string[]) => {
+  const runProcessingSteps = async (steps: string[], targetPhase: Phase) => {
     setIsTyping(true);
     const initialSteps: ProcessingStep[] = steps.map((s, i) => ({
       id: i.toString(),
@@ -82,7 +68,7 @@ const App: React.FC = () => {
       }));
       
       const isLastStep = i === steps.length - 1;
-      const isOracleIntegration = (phase === Phase.COMPLIANCE || phase === Phase.EVENT_SPEAKER_FINALIZE || phase === Phase.FUNDING_CHECK || phase === Phase.TAX_EXEMPTION_Q2 || phase === Phase.EVENT_FUNDING_CHECK) && isLastStep;
+      const isOracleIntegration = (targetPhase === Phase.COMPLIANCE || targetPhase === Phase.EVENT_SPEAKER_FINALIZE || targetPhase === Phase.FUNDING_CHECK || targetPhase === Phase.TAX_EXEMPTION_Q2 || targetPhase === Phase.EVENT_FUNDING_CHECK) && isLastStep;
       
       const delay = isOracleIntegration 
         ? 4500 
@@ -98,36 +84,18 @@ const App: React.FC = () => {
     setCurrentSteps([]);
   };
 
-  const handleSendMessage = async (text: string) => {
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: text,
-      timestamp: new Date()
-    };
-    setMessages(prev => [...prev, userMsg]);
-
-    const steps = getStepsForPhase(phase, text);
-    if (steps.length > 0) {
-      await runProcessingSteps(steps);
-    }
-    processNextPhase(text);
-  };
-
-  const getStepsForPhase = (currentPhase: Phase, userInput: string): string[] => {
-    if (workflowType === 'event') {
+  const getStepsForPhase = (currentPhase: Phase, userInput: string, workflowOverride?: 'procure' | 'event'): string[] => {
+    const activeWorkflow = workflowOverride || workflowType;
+    if (activeWorkflow === 'event') {
       switch (currentPhase) {
         case Phase.IDLE:
           return [
             "Parsing Event Requirements...",
             "Validating SIO Forum Facility Policies...",
-            "Cross-referencing Venue Availability...",
-            "Checking Risk Management Thresholds..."
+            "Cross-referencing Venue Availability..."
           ];
         case Phase.EVENT_VENUE_CHECK:
-          return [
-            "Preparing Event Integrations..."
-          ];
+          return ["Preparing Event Integrations..."];
         case Phase.EVENT_RENTAL_QUOTE:
           return [
             "Transmitting to Abbey Party Rentals...",
@@ -147,10 +115,8 @@ const App: React.FC = () => {
           ];
         case Phase.EVENT_FUNDING_CHECK:
           return [
-            "Applying Entertainment Policy (BUS-79)...",
-            "Querying Agreement Suppliers (Rentals/Valet)...",
-            "Checking Catering Compliance (Saltaire Partnership)...",
-            "Calculating Per-Person Maximums"
+            "Accessing Oracle PPM Funding Module...",
+            "Validating Budget Availability...",
           ];
         case Phase.EVENT_POLICY_GUIDANCE:
           return [
@@ -228,7 +194,17 @@ const App: React.FC = () => {
     }
   };
 
-  const processNextPhase = (userInput: string) => {
+  const processAgentResponse = async (userInput: string, phaseOverride?: Phase, workflowOverride?: 'procure' | 'event') => {
+    const currentPhase = phaseOverride !== undefined ? phaseOverride : phase;
+    const currentWorkflow = workflowOverride || workflowType;
+
+    if (!currentWorkflow) return;
+
+    const steps = getStepsForPhase(currentPhase, userInput, currentWorkflow);
+    if (steps.length > 0) {
+      await runProcessingSteps(steps, currentPhase);
+    }
+
     let response: Message = {
       id: (Date.now() + 1).toString(),
       role: 'agent',
@@ -236,16 +212,16 @@ const App: React.FC = () => {
       timestamp: new Date()
     };
 
-    if (workflowType === 'event') {
-      switch (phase) {
+    if (currentWorkflow === 'event') {
+      switch (currentPhase) {
         case Phase.IDLE:
-          response.content = "The SIO Forum is a fantastic venue. Since this is a specialized facility, I need to check the guest list composition for policy compliance. \n\n**Are the attendees primarily students, faculty/staff, or external donors?**";
+          response.content = "The SIO Forum is a fantastic venue for a lunch banquet. I have noted your target date of March 1, 2026, and your headcount of 200. I can certainly help you coordinate the rentals, valet, catering, and speaker compensation. \n\nSince SIO is a specialized facility, I first need to check the guest list composition for policy compliance. **Are the attendees primarily students, faculty/staff, or external donors?**";
           response.actions = ["Fundraising (Donors/Staff)", "Academic Conference", "Internal Meeting"];
           setPhase(Phase.EVENT_VENUE_CHECK);
           break;
 
         case Phase.EVENT_VENUE_CHECK:
-          response.content = "Excellent. Since the nature of the event is **Fundraising**, I've identified the appropriate Triton-Preferred suppliers.\n\nLet's start with the rentals. You need to get a quote from *Abbey Party Rentals* (Agreement Supplier) to generate the requisition. I've drafted the following request for you:";
+          response.content = "Excellent. Since this is a **Fundraising** event, I will filter for Triton-Preferred suppliers that meet donor guidelines.\n\nLet's start with your first requirement: **Party Rentals**. You need a quote from Abbey Party Rentals (Agreement Supplier) to generate the requisition. I've drafted the request using your 200-person headcount.";
           response.metadata = {
             type: 'email_draft',
             to: 'quotes@abbeypartyrentals.com',
@@ -269,7 +245,7 @@ ${projectInfo.user}`
           break;
 
         case Phase.EVENT_RENTAL_QUOTE:
-          response.content = "✅ **Email sent to Abbey Party Rentals.** A copy has been forwarded to your inbox and CC'd to your department's financial unit approver.\n\nNext, let's handle the valet. *Ace Parking* is our preferred partner. I've drafted the following request:";
+          response.content = "✅ **Rental request sent.** A copy has been forwarded to your inbox and CC'd to your financial unit approver.\n\nMoving to your second requirement: **Valets.** Given the 200-guest count at SIO, Ace Parking is our preferred partner to handle the traffic volume. I've proactively drafted the following request";
           response.metadata = {
             type: 'email_draft',
             to: 'ucsd-events@aceparking.com',
@@ -293,14 +269,14 @@ ${projectInfo.user}`
           break;
 
         case Phase.EVENT_VALET_QUOTE:
-          response.content = "✅ **Email sent to Ace Parking.** CCs have been applied.\n\nFinally, for catering, we will use *Saltaire*. Current meal maximums are $31 (Breakfast), $54 (Lunch), and $94 (Dinner).\n\nTo proceed with Saltaire and ensure donor compliance, I need you to upload the preliminary guest list. Do you have that ready?";
+          response.content = "✅ **Valet request sent.**\n\nRequirement three: **Catering.** For donor-compliant lunch banquets at SIO, Saltaire is highly recommended. Current meal maximums are $54 per person for lunch.\n\nTo proceed with Saltaire and ensure we stay compliant with donor caps, I need you to upload the preliminary guest list. Do you have that ready?";
           response.actions = ["I don't have it yet", "Upload Guest List"];
           setPhase(Phase.EVENT_CATERING_CHECK);
           break;
 
         case Phase.EVENT_CATERING_CHECK:
           if (userInput.toLowerCase().includes("don't") || userInput.toLowerCase().includes("yet") || userInput.toLowerCase().includes("not")) {
-            response.content = "Absolutely no problem! I have created a follow-up task on your dashboard to remind you to upload the guest list later. We can still move forward.\n\nTo continue preparing your event profile, which funding source would you like to use for these expenses?";
+            response.content = "No problem! I've created a follow-up task on your dashboard to upload the list later so we don't lose momentum.\n\nBefore we move to your final request (the speaker payment), which funding source would you like to use to cover these event expenses?";
             response.actions = ["Use General Fund", "Add New Funding Source"];
             setTaskCount(prev => prev + 1);
             setPhase(Phase.EVENT_FUNDING_CHECK);
@@ -312,7 +288,7 @@ ${projectInfo.user}`
           break;
 
         case Phase.EVENT_FUNDING_CHECK:
-          response.content = "Budget check passed for the **General Fund**. To compensate your speaker, we will create a Payment Request. I've noted the funding source. \n\n**Who is the speaker?**";
+          response.content = "Budget check passed for the **General Fund.** \n\nNow for your final requirement: **Paying your speaker.** To process this, I will draft a Payment Request against the General Fund. Who is the speaker you are bringing in?";
           setPhase(Phase.EVENT_POLICY_GUIDANCE);
           break;
 
@@ -323,7 +299,7 @@ ${projectInfo.user}`
           break;
 
         case Phase.EVENT_SPEAKER_FORM:
-          if (userInput.toLowerCase().includes("start") || phase === Phase.EVENT_SPEAKER_FORM) {
+          if (userInput.toLowerCase().includes("start") || currentPhase === Phase.EVENT_SPEAKER_FORM) {
             response.content = "✅ **Payment Request successfully drafted in Oracle Financial Cloud.**\n\nI have populated the location (SIO Forum) and the date from our records. The invoice has been attached for processing. \n\n**Invoice #00236823** is now routing to your Departmental Approver.";
             setPhase(Phase.FINISHED);
           } else {
@@ -335,99 +311,127 @@ ${projectInfo.user}`
         default:
           response.content = "The event workflow is complete. How else can I assist with your planning today?";
       }
-      setMessages(prev => [...prev, response]);
-      return;
-    }
+    } else {
+      // Procurement Workflow
+      switch (currentPhase) {
+        case Phase.IDLE:
+          response.content = "I can certainly assist with that. To ensure technical parity and correct sourcing for a electron microscope, I'll need a few more technical specifications. Could you please provide the required **Resolution (nm)** and **Operating Voltage (kV)**?";
+          setPhase(Phase.SPEC_CHECK);
+          break;
 
-    // Procurement Workflow
-    switch (phase) {
-      case Phase.IDLE:
-        response.content = "I can certainly assist with that. To ensure technical parity and correct sourcing for a electron microscope, I'll need a few more technical specifications. Could you please provide the required **Resolution (nm)** and **Operating Voltage (kV)**?";
-        setPhase(Phase.SPEC_CHECK);
-        break;
+        case Phase.SPEC_CHECK:
+          response.content = "⚠️ **Attention!** \n\nI scanned the campus-wide asset inventory and found **2 matching units** currently underutilized in the Biology Department (York Hall Cluster). \n\nWould you like to request access to share these resources instead of purchasing new equipment? This helps our **sustainability goal** and **saves** your project budget!";
+          response.actions = ["Yes, share resource", "No, I need my own"];
+          setPhase(Phase.INVENTORY_CHECK);
+          break;
 
-      case Phase.SPEC_CHECK:
-        response.content = "⚠️ **Attention!** \n\nI scanned the campus-wide asset inventory and found **2 matching units** currently underutilized in the Biology Department (York Hall Cluster). \n\nWould you like to request access to share these resources instead of purchasing new equipment? This helps our **sustainability goal** and **saves** your project budget!";
-        response.actions = ["Yes, share resource", "No, I need my own"];
-        setPhase(Phase.INVENTORY_CHECK);
-        break;
+        case Phase.INVENTORY_CHECK:
+          if (userInput.toLowerCase().includes("no") || userInput.toLowerCase().includes("own")) {
+            response.content = "Understood. Policy requires selecting a funding source before we can query approved supplier catalogs and pricing. Which active project would you like to use?";
+            response.actions = ["Charge to NIH-BR-2024", "Charge to NSF-PHY-2025", "Charge to GEN-FUND-2026"];
+            setPhase(Phase.FUNDING_CHECK);
+          } else {
+            response.content = "Excellent choice. Initiating Resource Share request with Dr. Smith's lab in Biology. You've saved **$68,500** in project funds.";
+            setPhase(Phase.FINISHED);
+          }
+          break;
 
-      case Phase.INVENTORY_CHECK:
-        if (userInput.toLowerCase().includes("no") || userInput.toLowerCase().includes("own")) {
-          response.content = "Understood. Policy requires selecting a funding source before we can query approved supplier catalogs and pricing. Which active project would you like to use?";
-          response.actions = ["Charge to NIH-BR-2024", "Charge to NSF-PHY-2025", "Charge to GEN-FUND-2026"];
-          setPhase(Phase.FUNDING_CHECK);
-        } else {
-          response.content = "Excellent choice. Initiating Resource Share request with Dr. Smith's lab in Biology. You've saved **$68,500** in project funds.";
-          setPhase(Phase.FINISHED);
-        }
-        break;
-
-      case Phase.FUNDING_CHECK:
-        let selectedProject = "NIH-BR-2024";
-        if (userInput.includes("NSF")) selectedProject = "NSF-PHY-2025";
-        if (userInput.includes("GEN")) selectedProject = "GEN-FUND-2026";
-        
-        response.content = `Budget check passed for **${selectedProject}**. Based on this funding source's approved catalogs, I have retrieved the best sourcing options for your specifications:`;
-        response.metadata = {
-          type: 'comparison',
-          options: [
-            { label: 'Non-Contracted (User Choice)', price: '$68,500', shipping: '4-6 Weeks', compliance: 'New Vendor Setup Required', risk: 'High' },
-            { label: 'Triton Recommended (ThermoFisher)', price: '$58,500', shipping: '1 Week', compliance: 'Pre-negotiated Warranty', risk: 'Low' }
-          ]
-        };
-        response.actions = ["Select Triton Recommended", "Proceed with Non-Contracted"];
-        setPhase(Phase.COMPARISON);
-        break;
-
-      case Phase.COMPARISON:
-        response.content = "I see you've selected the ThermoFisher equipment ($58,500). Based on your department’s registration (Life Sciences R&D), this item may qualify for the California Partial Sales Tax Exemption, which would save you approximately $2,303 on this transaction.\n\nWould you like me to verify eligibility and generate the exemption certificate for the vendor?";
-        response.actions = ["Yes, let's do that", "No, skip exemption"];
-        setPhase(Phase.TAX_EXEMPTION_INIT);
-        break;
-
-      case Phase.TAX_EXEMPTION_INIT:
-        response.content = "Great. To ensure high-compliance and minimize audit risk, I just need to confirm three things:\n\n1. **Useful Life:** Will this equipment be used in your lab for at least one year?\n2. **Usage:** Will it be used 50% or more of the time for R&D activities here in California?\n3. **Exclusion Check:** Is this item strictly for research, or will it be used for administrative or marketing purposes?";
-        setPhase(Phase.TAX_EXEMPTION_Q1);
-        break;
-
-      case Phase.TAX_EXEMPTION_Q1:
-        response.content = "Perfect. One final compliance check: Our records show your primary NAICS code is 541711 (Biotech R&D). Does this purchase support an activity where you are discovering information that is technological in nature for a new or improved business component?";
-        setPhase(Phase.TAX_EXEMPTION_Q2);
-        break;
-
-      case Phase.TAX_EXEMPTION_Q2:
-        response.content = "Eligibility confirmed.\n\n• **Compliance Status:** High (Meets Reg. 1525.4 criteria).\n\n• **Tax Impact:** Applied 3.9375% reduction to the state portion.\n\n• **Action:** I have generated the CDTFA-230-M certificate and attached it to your Requistion Order. The vendor will receive this automatically.\n\nYour estimated total has been updated from $58,500 to $56,197. \n\n **Ready to submit?**";
-        setPhase(Phase.COMPLIANCE);
-        break;
-
-      case Phase.COMPLIANCE:
-        response.content = "Excellent. I am auto-generating the required compliance documentation and routing this through **Oracle Financial Cloud**.";
-        response.metadata = {
-          type: 'compliance_checklist',
-          items: [
-            { text: "Price > $5,000 → Flagged as Inventorial Equipment", status: 'done' },
-            { text: "SSJPR (Sole Source) Generated: Validated against Chemistry Department historicals", status: 'done' }
-          ]
-        };
-        
-        setTimeout(() => {
-          const poMsg: Message = {
-            id: 'po-final',
-            role: 'agent',
-            content: "✅ **Requisition successfully submitted to Oracle Cloud.** \n\n**Requisition #REQ0218927** has been created. The supplier has been notified via the B2B portal. Tracking information will be updated in your dashboard shortly.",
-            timestamp: new Date()
+        case Phase.FUNDING_CHECK:
+          let selectedProject = "NIH-BR-2024";
+          if (userInput.includes("NSF")) selectedProject = "NSF-PHY-2025";
+          if (userInput.includes("GEN")) selectedProject = "GEN-FUND-2026";
+          
+          response.content = `Budget check passed for **${selectedProject}**. Based on this funding source's approved catalogs, I have retrieved the best sourcing options for your specifications:`;
+          response.metadata = {
+            type: 'comparison',
+            options: [
+              { label: 'Non-Contracted (User Choice)', price: '$68,500', shipping: '4-6 Weeks', compliance: 'New Vendor Setup Required', risk: 'High' },
+              { label: 'Triton Recommended (ThermoFisher)', price: '$58,500', shipping: '1 Week', compliance: 'Pre-negotiated Warranty', risk: 'Low' }
+            ]
           };
-          setMessages(prev => [...prev, poMsg]);
-        }, 4000);
-        setPhase(Phase.FINISHED);
-        break;
-      
-      default:
-        response.content = "Process complete. How else can I assist with your procurement pipeline today?";
+          response.actions = ["Select Triton Recommended", "Proceed with Non-Contracted"];
+          setPhase(Phase.COMPARISON);
+          break;
+
+        case Phase.COMPARISON:
+          response.content = "I see you've selected the ThermoFisher equipment ($58,500). Based on your department’s registration (Life Sciences R&D), this item may qualify for the California Partial Sales Tax Exemption, which would save you approximately $2,303 on this transaction.\n\nWould you like me to verify eligibility and generate the exemption certificate for the vendor?";
+          response.actions = ["Yes, let's do that", "No, skip exemption"];
+          setPhase(Phase.TAX_EXEMPTION_INIT);
+          break;
+
+        case Phase.TAX_EXEMPTION_INIT:
+          response.content = "Great. To ensure high-compliance and minimize audit risk, I just need to confirm three things:\n\n1. **Useful Life:** Will this equipment be used in your lab for at least one year?\n2. **Usage:** Will it be used 50% or more of the time for R&D activities here in California?\n3. **Exclusion Check:** Is this item strictly for research, or will it be used for administrative or marketing purposes?";
+          setPhase(Phase.TAX_EXEMPTION_Q1);
+          break;
+
+        case Phase.TAX_EXEMPTION_Q1:
+          response.content = "Perfect. One final compliance check: Our records show your primary NAICS code is 541711 (Biotech R&D). Does this purchase support an activity where you are discovering information that is technological in nature for a new or improved business component?";
+          setPhase(Phase.TAX_EXEMPTION_Q2);
+          break;
+
+        case Phase.TAX_EXEMPTION_Q2:
+          response.content = "Eligibility confirmed.\n\n• **Compliance Status:** High (Meets Reg. 1525.4 criteria).\n\n• **Tax Impact:** Applied 3.9375% reduction to the state portion.\n\n• **Action:** I have generated the CDTFA-230-M certificate and attached it to your Requistion Order. The vendor will receive this automatically.\n\nYour estimated total has been updated from $58,500 to $56,197. \n\n **Ready to submit?**";
+          setPhase(Phase.COMPLIANCE);
+          break;
+
+        case Phase.COMPLIANCE:
+          response.content = "Excellent. I am auto-generating the required compliance documentation and routing this through **Oracle Financial Cloud**.";
+          response.metadata = {
+            type: 'compliance_checklist',
+            items: [
+              { text: "Price > $5,000 → Flagged as Inventorial Equipment", status: 'done' },
+              { text: "SSJPR (Sole Source) Generated: Validated against Chemistry Department historicals", status: 'done' }
+            ]
+          };
+          
+          setTimeout(() => {
+            const poMsg: Message = {
+              id: 'po-final',
+              role: 'agent',
+              content: "✅ **Requisition successfully submitted to Oracle Cloud.** \n\n**Requisition #REQ0218927** has been created. The supplier has been notified via the B2B portal. Tracking information will be updated in your dashboard shortly.",
+              timestamp: new Date()
+            };
+            setMessages(prev => [...prev, poMsg]);
+          }, 4000);
+          setPhase(Phase.FINISHED);
+          break;
+        
+        default:
+          response.content = "Process complete. How else can I assist with your procurement pipeline today?";
+      }
     }
 
     setMessages(prev => [...prev, response]);
+  };
+
+  const handleStartQuery = (initialMessage: string) => {
+    const intent = /event|plan|symposium|organize|retreat/i.test(initialMessage) ? 'event' : 'procure';
+    setWorkflowType(intent);
+    setActiveTab('chat');
+    setPhase(Phase.IDLE);
+
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: initialMessage,
+      timestamp: new Date()
+    };
+    setMessages([userMsg]);
+
+    // Trigger agent response immediately with intent override
+    processAgentResponse(initialMessage, Phase.IDLE, intent);
+  };
+
+  const handleSendMessage = async (text: string) => {
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: text,
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, userMsg]);
+    
+    await processAgentResponse(text);
   };
 
   const getActiveSessionName = () => {
@@ -468,7 +472,7 @@ ${projectInfo.user}`
         </header>
 
         {activeTab === 'dashboard' ? (
-          <Dashboard onStartWorkflow={startWorkflow} />
+          <Dashboard onStartQuery={handleStartQuery} />
         ) : (
           <ChatArea 
             messages={messages} 
