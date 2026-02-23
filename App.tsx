@@ -114,7 +114,10 @@ const App: React.FC = () => {
             "Syncing with Dashboard Reminders..."
           ];
         case Phase.EVENT_FUNDING_CHECK:
-          return [];
+          return [
+            "Accessing Oracle Financial Cloud...",
+            "Validating Budget Availability..."
+          ];
         case Phase.EVENT_POLICY_GUIDANCE:
           return [
             "Drafting Payment Request for Oracle Financial Cloud...",
