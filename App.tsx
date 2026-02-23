@@ -18,21 +18,21 @@ const App: React.FC = () => {
     user: "Dr. Palacios",
     projects: [
       {
-        name: "NIH-BR-2024",
+        name: "2028517-SP SHAH NIH R01AR081887",
         funder: "NIH",
-        grantId: "Grant #2024-BR-UCSD",
-        utilization: 85
+        grantId: "2028517-SP SHAH NIH",
+        utilization: 75
       },
       {
-        name: "NSF-PHY-2025",
+        name: "2025433-SP Pui NSF CNS-2212241",
         funder: "NSF",
-        grantId: "Grant #2025-PHY-NSF",
+        grantId: "2025433-SP Pui NSF",
         utilization: 50
       },
       {
-        name: "GEN-FUND-2026",
+        name: "1015411-OTHR Symposium Fund",
         funder: "GEN",
-        grantId: "Core Operating Fund #2026",
+        grantId: "1x Symposium Operating Fund #2026",
         utilization: 62
       }
     ]
@@ -134,13 +134,13 @@ const App: React.FC = () => {
       case Phase.IDLE:
         return [
           "Parsing Procurement Intent...",
-          "Identifying Category (High-Value Research)...",
-          "Cross-referencing Oracle Commodity Codes...",
+          "Identifying Purchasing Category (Lab Equipment)...",
+          "Cross-referencing Oracle Account Codes...",
           "Flagging Missing Technical Specs..."
         ];
       case Phase.SPEC_CHECK:
         return [
-          "Querying CoreBio Asset Registry...",
+          "Querying CAMS Asset Registry...",
           "Scanning York Hall Shared Equipment Database...",
           "Analyzing Utilization Data...",
           "Calculating Sustainability Parity Score..."
@@ -148,7 +148,7 @@ const App: React.FC = () => {
       case Phase.INVENTORY_CHECK:
         if (userInput.toLowerCase().includes("no") || userInput.toLowerCase().includes("own")) {
           return [
-            "Fetching Active Grants from Oracle PPM...",
+            "Fetching Active Projects from Oracle PPM...",
             "Identifying Eligible Funds (NIH/NSF/GEN)...",
             "Preparing Budget Selection Interface..."
           ];
@@ -158,14 +158,14 @@ const App: React.FC = () => {
         return [
           "Accessing Oracle PPM Funding Module...",
           "Validating Budget Availability...",
-          "Checking Grant Expiration Dates...",
-          "Verifying Allowability for Spend Category..."
+          "Checking Project Expiration Dates...",
+          "Verifying Allowability for Expenditure Type..."
         ];
       case Phase.COMPARISON:
         return [];
       case Phase.TAX_EXEMPTION_INIT:
         return [
-          "Loading California Tax Board Regulations...",
+          "Loading California Franchise Tax Board Regulations...",
           "Cross-referencing Item Category..."
         ];
       case Phase.TAX_EXEMPTION_Q1:
