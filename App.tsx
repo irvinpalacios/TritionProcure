@@ -98,7 +98,7 @@ const App: React.FC = () => {
           return ["Preparing Event Integrations..."];
         case Phase.EVENT_RENTAL_QUOTE:
           return [
-            "Transmitting to Abbey Party Rentals...",
+            "Transmitting to Bright Event Rentals...",
             "CC'ing Financial Unit Approver...",
             "Logging outbound communication..."
           ];
@@ -216,12 +216,12 @@ const App: React.FC = () => {
           break;
 
         case Phase.EVENT_VENUE_CHECK:
-          response.content = "Excellent. Since this is a **Fundraising** event, that effects which UC Entertainment policies apply. I’ll account for that as we move forward. I will filter for Triton-Preferred suppliers for your event.\n\nLet's start with your first requirement: **Party Rentals**. You need a quote from Abbey Party Rentals (Agreement Supplier) to generate the requisition. I've drafted the request using your 200-person headcount.";
+          response.content = "Excellent. Since this is a **Fundraising** event, that effects which UC Entertainment policies apply. I’ll account for that as we move forward. I will filter for Triton-Preferred suppliers for your event.\n\nLet's start with your first requirement: **Party Rentals**. You need a quote from Bright Event Rentals (Agreement Supplier) to generate the requisition. I've drafted the request using your 200-person headcount.";
           response.metadata = {
             type: 'email_draft',
-            to: 'quotes@abbeypartyrentals.com',
+            to: 'quotes@brighteventrentals.com',
             subject: 'Quote Request - UC San Diego SIO Forum Event (3/1/2026)',
-            message: `Hi Abbey Team, 
+            message: `Hi Bright Event Rentals Team, 
 
 I am looking for a quote for a lunch banquet at the **SIO Forum** on **March 1, 2026**. We are hosting **200 guests** and require the following essentials for delivery:
 
@@ -283,12 +283,12 @@ ${projectInfo.user}`
           break;
 
         case Phase.EVENT_FUNDING_CHECK:
-          response.content = "Budget check passed for the **Symposium 1x Fund.** \n\nNow for your final requirement: **Paying your speaker.** To process this, I will draft a Payment Request against the General Fund. Who is the speaker you are bringing in?";
+          response.content = "Budget check passed for the **Symposium 1x Fund.** \n\nNow for your final requirement: **Paying your speaker.** To process this, I will draft a Payment Request against the General Fund. What is the name of the speaker that you are bringing in?";
           setPhase(Phase.EVENT_POLICY_GUIDANCE);
           break;
 
         case Phase.EVENT_POLICY_GUIDANCE:
-          response.content = `Excellent.  I’ve confirmed that **${userInput}** has an active supplier profile in Oracle. I have everything I need to create the payment request for **${userInput}**, and I am submitting it now to your Departmental Approver.\n\nAs a reminder, I've added a task to your dashboard and will nudge you in a few days to upload the finalized guest list for Saltaire Catering. \n\nI am also actively monitoring our inbox. Once Abbey Party Rentals and Ace Parking return their quotes, I will automatically retrieve them and finalize those requisitions to secure all your event elements.\n\n**You are all set for now!** I'll handle these next steps in the background. If you have any other questions, just let me know. Otherwise, I look forward to collaborating with you to finalize these details!`;
+          response.content = `Excellent.  I’ve confirmed that **${userInput}** has an active supplier profile in Oracle. I have everything I need to create the payment request for **${userInput}**, and I am submitting it now to your Departmental Approver.\n\nAs a reminder, I've added a task to your dashboard and will nudge you in a few days to upload the finalized guest list for Saltaire Catering. \n\nI am also actively monitoring our inbox. Once Bright Event Rentals and Ace Parking return their quotes, I will automatically retrieve them and finalize those requisitions to secure all your event elements.\n\n**You are all set for now!** I'll handle these next steps in the background. If you have any other questions, just let me know. Otherwise, I look forward to collaborating with you to finalize these details!`;
           // Explicitly removing response.actions to prevent buttons from rendering
           setPhase(Phase.FINISHED);
           break;
