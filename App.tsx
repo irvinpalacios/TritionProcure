@@ -216,11 +216,11 @@ const App: React.FC = () => {
           break;
 
         case Phase.EVENT_VENUE_CHECK:
-          response.content = "Excellent. Since this is a **Fundraising** event, I will filter for Triton-Preferred suppliers that meet donor guidelines.\n\nLet's start with your first requirement: **Party Rentals**. You need a quote from Abbey Party Rentals (Agreement Supplier) to generate the requisition. I've drafted the request using your 200-person headcount.";
+          response.content = "Excellent. Since this is a **Fundraising** event, that effects which UC Entertainment policies apply. I’ll account for that as we move forward. I will filter for Triton-Preferred suppliers for your event.\n\nLet's start with your first requirement: **Party Rentals**. You need a quote from Abbey Party Rentals (Agreement Supplier) to generate the requisition. I've drafted the request using your 200-person headcount.";
           response.metadata = {
             type: 'email_draft',
             to: 'quotes@abbeypartyrentals.com',
-            subject: 'Quote Request - UCSD SIO Forum Event (3/1/2026)',
+            subject: 'Quote Request - UC San Diego SIO Forum Event (3/1/2026)',
             message: `Hi Abbey Team, 
 
 I am looking for a quote for a lunch banquet at the **SIO Forum** on **March 1, 2026**. We are hosting **200 guests** and require the following essentials for delivery:
@@ -249,7 +249,7 @@ ${projectInfo.user}`
 
 I need a valet staffing quote for a lunch banquet at the **SIO Forum** on **March 1, 2026**.
 
-* **Guest Count:** 200 people (Approx. 80-100 cars)
+* **Guest Count:** 200 people (Approx. 80-120 cars)
 * **Estimated Hours:** 11:00 AM – 2:30 PM
 * **Type:** Hosted (Complimentary for guests)
 * **Parking:** Using the adjacent SIO parking lot 
@@ -272,23 +272,23 @@ ${projectInfo.user}`
         case Phase.EVENT_CATERING_CHECK:
           if (userInput.toLowerCase().includes("don't") || userInput.toLowerCase().includes("yet") || userInput.toLowerCase().includes("not")) {
             response.content = "No problem! I've created a follow-up task on your dashboard to upload the list later so we don't lose momentum.\n\nBefore we move to your final request (the speaker payment), which funding source would you like to use to cover these event expenses?";
-            response.actions = ["Use General Fund", "Add New Funding Source"];
+            response.actions = ["Use Symposium 1x Funds", "Add New Funding Source"];
             setTaskCount(prev => prev + 1);
             setPhase(Phase.EVENT_FUNDING_CHECK);
           } else {
             response.content = "Excellent. Guest list received and attached to the event profile. \n\nTo continue, which funding source would you like to use for these expenses?";
-            response.actions = ["Use General Fund", "Add New Funding Source"];
+            response.actions = ["Use Symposium 1x Funds", "Add New Funding Source"];
             setPhase(Phase.EVENT_FUNDING_CHECK);
           }
           break;
 
         case Phase.EVENT_FUNDING_CHECK:
-          response.content = "Budget check passed for the **General Fund.** \n\nNow for your final requirement: **Paying your speaker.** To process this, I will draft a Payment Request against the General Fund. Who is the speaker you are bringing in?";
+          response.content = "Budget check passed for the **Symposium 1x Fund.** \n\nNow for your final requirement: **Paying your speaker.** To process this, I will draft a Payment Request against the General Fund. Who is the speaker you are bringing in?";
           setPhase(Phase.EVENT_POLICY_GUIDANCE);
           break;
 
         case Phase.EVENT_POLICY_GUIDANCE:
-          response.content = `Excellent. I have everything I need to create the payment request for **${userInput}**, and I am submitting it now to your Departmental Approver.\n\nAs a reminder, I've added a task to your dashboard and will nudge you in a few days to upload the finalized guest list for Saltaire Catering. \n\nI am also actively monitoring our inbox. Once Abbey Party Rentals and Ace Parking return their quotes, I will automatically retrieve them and finalize those requisitions to secure all your event elements.\n\n**You are all set for now!** I'll handle these next steps in the background. If you have any other questions, just let me know. Otherwise, I look forward to collaborating with you to finalize these details!`;
+          response.content = `Excellent.  I’ve confirmed that **${userInput}** has an active supplier profile in Oracle. I have everything I need to create the payment request for **${userInput}**, and I am submitting it now to your Departmental Approver.\n\nAs a reminder, I've added a task to your dashboard and will nudge you in a few days to upload the finalized guest list for Saltaire Catering. \n\nI am also actively monitoring our inbox. Once Abbey Party Rentals and Ace Parking return their quotes, I will automatically retrieve them and finalize those requisitions to secure all your event elements.\n\n**You are all set for now!** I'll handle these next steps in the background. If you have any other questions, just let me know. Otherwise, I look forward to collaborating with you to finalize these details!`;
           // Explicitly removing response.actions to prevent buttons from rendering
           setPhase(Phase.FINISHED);
           break;
@@ -306,15 +306,15 @@ ${projectInfo.user}`
           break;
 
         case Phase.SPEC_CHECK:
-          response.content = "⚠️ **Attention!** \n\nI scanned the campus-wide asset inventory and found **2 matching units** currently underutilized in the Biology Department (York Hall Cluster). \n\nWould you like to request access to share these resources instead of purchasing new equipment? This helps our **sustainability goal** and **saves** your project budget!";
+          response.content = "⚠️ **Attention!** \n\nI scanned your department’s asset inventory and found **2 matching units** currently underutilized in the Biology Department (York Hall Cluster). \n\nWould you like to request access to share these resources instead of purchasing new equipment? If you aren’t going to need this item frequently, sharing equipment helps our **sustainability goal** and **saves** your project budget!";
           response.actions = ["Yes, share resource", "No, I need my own"];
           setPhase(Phase.INVENTORY_CHECK);
           break;
 
         case Phase.INVENTORY_CHECK:
           if (userInput.toLowerCase().includes("no") || userInput.toLowerCase().includes("own")) {
-            response.content = "Understood. Policy requires selecting a funding source before we can query approved supplier catalogs and pricing. Which active project would you like to use?";
-            response.actions = ["Charge to NIH-BR-2024", "Charge to NSF-PHY-2025", "Charge to GEN-FUND-2026"];
+            response.content = "Understood. To get your purchase started, please identify the project or chart string you want to use. Here’s a list of the projects or chart strings you’ve used in the past you can select from, or you can type a new project or chart string in the box below. Which active project would you like to use?";
+            response.actions = ["Charge to 2028517-SP SHAH NIH R01AR081887", "Charge to 2025433-SP Pui NSF CNS-2212241", "Charge to 1015411-OTHR Symposium Fund"];
             setPhase(Phase.FUNDING_CHECK);
           } else {
             response.content = "Excellent choice. Initiating Resource Share request with Dr. Smith's lab in Biology. You've saved **$68,500** in project funds.";
@@ -323,9 +323,9 @@ ${projectInfo.user}`
           break;
 
         case Phase.FUNDING_CHECK:
-          let selectedProject = "NIH-BR-2024";
-          if (userInput.includes("NSF")) selectedProject = "NSF-PHY-2025";
-          if (userInput.includes("GEN")) selectedProject = "GEN-FUND-2026";
+          let selectedProject = "2028517-SP SHAH NIH R01AR081887";
+          if (userInput.includes("NSF")) selectedProject = "2025433-SP Pui NSF CNS-2212241";
+          if (userInput.includes("GEN")) selectedProject = "1015411-OTHR Symposium Fund";
           
           response.content = `Budget check passed for **${selectedProject}**. Based on this funding source's approved catalogs, I have retrieved the best sourcing options for your specifications:`;
           response.metadata = {
@@ -346,7 +346,7 @@ ${projectInfo.user}`
           break;
 
         case Phase.TAX_EXEMPTION_INIT:
-          response.content = "Great. To ensure high-compliance and minimize audit risk, I just need to confirm three things:\n\n1. **Useful Life:** Will this equipment be used in your lab for at least one year?\n2. **Usage:** Will it be used 50% or more of the time for R&D activities here in California?\n3. **Exclusion Check:** Is this item strictly for research, or will it be used for administrative or marketing purposes?";
+          response.content = "Great. To ensure high-compliance and minimize audit risk, I just need to confirm three things:\n\n1. **Useful Life:** Will this equipment be used in your lab for at least one year?\n2. **Usage:** Will it be used 50% or more of the time for R&D activities here in California?\n3. **Exclusion Check:** Will this item be used strictly for research purposes?";
           setPhase(Phase.TAX_EXEMPTION_Q1);
           break;
 
@@ -356,7 +356,7 @@ ${projectInfo.user}`
           break;
 
         case Phase.TAX_EXEMPTION_Q2:
-          response.content = "Eligibility confirmed.\n\n• **Compliance Status:** High (Meets Reg. 1525.4 criteria).\n\n• **Tax Impact:** Applied 3.9375% reduction to the state portion.\n\n• **Action:** I have generated the CDTFA-230-M certificate and attached it to your Requistion Order. The vendor will receive this automatically.\n\nYour estimated total has been updated from $58,500 to $56,197. \n\n **Ready to submit?**";
+          response.content = "Eligibility confirmed.\n\n• **Compliance Status:** High (Meets Reg. 1525.4 criteria).\n\n• **Tax Impact:** Applied 3.9375% reduction to the state portion.\n\n• **Action:** I have generated the CDTFA-230-M certificate and attached it to your Requisition Order. The vendor will receive this automatically.\n\nYour estimated total has been updated from $58,500 to $56,197. \n\n **Ready to submit?**";
           setPhase(Phase.COMPLIANCE);
           break;
 
@@ -365,8 +365,8 @@ ${projectInfo.user}`
           response.metadata = {
             type: 'compliance_checklist',
             items: [
-              { text: "Price > $5,000 → Flagged as Inventorial Equipment", status: 'done' },
-              { text: "SSJPR (Sole Source) Generated: Validated against Chemistry Department historicals", status: 'done' }
+              { text: "Price > $5,000 → Flagged as Inventorial Equipment, Expenditure Type updated", status: 'done' },
+              { text: "Federally Funded Order > $10K: UC Required. SSPR Generated: Price reasonableness validated against past purchases made by Chemistry Department", status: 'done' }
             ]
           };
           
@@ -383,7 +383,7 @@ ${projectInfo.user}`
           break;
         
         default:
-          response.content = "Process complete. How else can I assist with your procurement pipeline today?";
+          response.content = "Process complete. How else can I assist with your procurement needs  today?";
       }
     }
 
