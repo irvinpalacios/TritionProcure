@@ -265,7 +265,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processi
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto flex items-end gap-4">
           <div className="flex-1 relative">
             <div className="absolute left-5 bottom-4.5 text-slate-400 pointer-events-none">
-              <Keyboard size={18} />
+              <Keyboard size={0} />
             </div>
             <textarea 
               ref={textareaRef}
