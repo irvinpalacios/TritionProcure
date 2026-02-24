@@ -210,8 +210,8 @@ const App: React.FC = () => {
     if (currentWorkflow === 'event') {
       switch (currentPhase) {
         case Phase.IDLE:
-          response.content = "The SIO Forum is a fantastic venue for a lunch banquet. I have noted your target date of March 1, 2026, and your headcount of 200. I can certainly help you coordinate the rentals, valet, catering, and speaker compensation. \n\nSince SIO is a specialized facility, I first need to check the guest list composition for policy compliance. **Are the attendees primarily students, faculty/staff, or external donors?**";
-          response.actions = ["Fundraising (Donors/Staff)", "Academic Conference", "Internal Meeting"];
+          response.content = "The SIO Forum is a fantastic venue for a lunch banquet. I have noted your target date of March 1, 2026, and your headcount of 200. I can certainly help you coordinate the rentals, valet, catering, and speaker compensation. \n\nSince SIO is a specialized facility, I first need to check the guest list composition for policy compliance. **What is the purpose of the event?**";
+          response.actions = ["Busienss/Technical Meeting", "Employee Morale Building", "Fundraising/Tickets", "Grand Rounds", "On-the-job Meals", "Public/Community Service", "Student Events"];
           setPhase(Phase.EVENT_VENUE_CHECK);
           break;
 
@@ -264,7 +264,7 @@ ${projectInfo.user}`
           break;
 
         case Phase.EVENT_VALET_QUOTE:
-          response.content = "✅ **Valet request sent.**\n\nRequirement three: **Catering.** For donor-compliant lunch banquets at SIO, Saltaire is highly recommended. Current meal maximums are $54 per person for lunch.\n\nTo proceed with Saltaire and ensure we stay compliant with donor caps, I need you to upload the preliminary guest list. Do you have that ready?";
+          response.content = "✅ **Valet request sent.**\n\nRequirement three: **Catering.** Per Regents Policy 5402, **all** full-service catering performed on-campus **must be** performed by Saltaire Catering. Since your event is at the Forum at SIO,  I've preselected Saltaire as your catering company. Current meal maximums are $54 per person for lunch.\n\nTo proceed with Saltaire and ensure we stay compliant with donor caps, I need you to upload the preliminary guest list. Do you have that ready?";
           response.actions = ["I don't have it yet", "Upload Guest List"];
           setPhase(Phase.EVENT_CATERING_CHECK);
           break;
@@ -351,7 +351,7 @@ ${projectInfo.user}`
           break;
 
         case Phase.TAX_EXEMPTION_Q1:
-          response.content = "Perfect. One final compliance check: Our records show your primary NAICS code is 541711 (Biotech R&D). Does this purchase support an activity where you are discovering information that is technological in nature for a new or improved business component?";
+          response.content = "Perfect. One final compliance check: Does this purchase support an activity where you are discovering information that is technological in nature for a new or improved business component?";
           setPhase(Phase.TAX_EXEMPTION_Q2);
           break;
 
@@ -374,7 +374,7 @@ ${projectInfo.user}`
             const poMsg: Message = {
               id: 'po-final',
               role: 'agent',
-              content: "✅ **Requisition successfully submitted to Oracle Cloud.** \n\n**Requisition #REQ0218927** has been created. The supplier has been notified via the B2B portal. Tracking information will be updated in your dashboard shortly.",
+              content: "✅ **Requisition successfully submitted to Oracle Cloud.** \n\n**Requisition #REQ0218927** has been created. The supplier will be issued a Purchase Order (PO). Tracking information will be updated in your dashboard shortly.",
               timestamp: new Date()
             };
             setMessages(prev => [...prev, poMsg]);
