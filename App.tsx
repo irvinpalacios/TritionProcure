@@ -110,8 +110,9 @@ const App: React.FC = () => {
           ];
         case Phase.EVENT_CATERING_CHECK:
           return [
-            "Creating follow-up task for Guest List...",
-            "Syncing with Dashboard Reminders..."
+            "Consulting Saltaire Preferred Menus...",
+            "Applying UC Entertainment Policy Caps...",
+            "Logging outbound communication..."
           ];
         case Phase.EVENT_FUNDING_CHECK:
           return [
@@ -264,22 +265,31 @@ ${projectInfo.user}`
           break;
 
         case Phase.EVENT_VALET_QUOTE:
-          response.content = "✅ **Valet request sent.**\n\nRequirement three: **Catering.** Per Regents Policy 5402, **all** full-service catering performed on-campus **must be** performed by Saltaire Catering. Since your event is at the Forum at SIO,  I've preselected Saltaire as your catering company. Current meal maximums are $54 per person for lunch.\n\nTo proceed with Saltaire and ensure we stay compliant with donor caps, I need you to upload the preliminary guest list. Do you have that ready?";
-          response.actions = ["I don't have it yet", "Upload Guest List"];
+          response.content = "✅ **Valet request sent.**\n\nRequirement three: **Catering.** Per Regents Policy 5402, **all** full-service catering performed on-campus **must be** performed by Saltaire Catering. Since your event is at the Forum at SIO, I've preselected Saltaire as your catering company. Current meal maximums are $54 per person for lunch.";
+          response.metadata = {
+            type: 'email_draft',
+            to: 'catering@ucsd.edu',
+            subject: 'Catering Inquiry: Lunch Banquet - SIO Forum (3/1/2026)',
+            message: `Hi Saltaire Team,
+
+I am looking for a lunch catering quote for an event at the **SIO Forum** on **March 1, 2026**. 
+
+* **Headcount:** 200 guests
+* **Service Type:** Full-service lunch banquet
+
+Could you please provide menu options that remain within the **$54/person** UC Entertainment policy maximum for lunch?
+
+Thank you,
+${projectInfo.user}`
+          };
+          response.actions = ["Send Email", "Edit Email"];
           setPhase(Phase.EVENT_CATERING_CHECK);
           break;
 
         case Phase.EVENT_CATERING_CHECK:
-          if (userInput.toLowerCase().includes("don't") || userInput.toLowerCase().includes("yet") || userInput.toLowerCase().includes("not")) {
-            response.content = "No problem! I've created a follow-up task on your dashboard to upload the list later so we don't lose momentum.\n\nBefore we move to your final request (the speaker payment), which funding source would you like to use to cover these event expenses?";
-            response.actions = ["Use Symposium 1x Funds", "Add New Funding Source"];
-            setTaskCount(prev => prev + 1);
-            setPhase(Phase.EVENT_FUNDING_CHECK);
-          } else {
-            response.content = "Excellent. Guest list received and attached to the event profile. \n\nTo continue, which funding source would you like to use for these expenses?";
-            response.actions = ["Use Symposium 1x Funds", "Add New Funding Source"];
-            setPhase(Phase.EVENT_FUNDING_CHECK);
-          }
+          response.content = "✅ **Catering inquiry sent.** Saltaire has been notified of your headcount and budget constraints.\n\nBefore we move to your final request (the speaker payment), which funding source would you like to use to cover these event expenses?";
+          response.actions = ["Use Symposium 1x Funds", "Add New Funding Source"];
+          setPhase(Phase.EVENT_FUNDING_CHECK);
           break;
 
         case Phase.EVENT_FUNDING_CHECK:

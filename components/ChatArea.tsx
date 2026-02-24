@@ -58,8 +58,15 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processi
     }
   };
 
-  const isOraclePhase = (phase === Phase.COMPARISON || phase === Phase.EVENT_SPEAKER_FINALIZE) && 
-    processingSteps.some(s => s.label.includes('Oracle') && s.status === 'active');
+  const isOraclePhase = (
+    phase === Phase.COMPARISON || 
+    phase === Phase.EVENT_SPEAKER_FINALIZE || 
+    phase === Phase.FUNDING_CHECK || 
+    phase === Phase.EVENT_FUNDING_CHECK || 
+    phase === Phase.COMPLIANCE || 
+    phase === Phase.TAX_EXEMPTION_Q2 ||
+    phase === Phase.EVENT_POLICY_GUIDANCE
+  ) && processingSteps.some(s => s.label.includes('Oracle') && s.status === 'active');
 
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-white relative overflow-hidden">

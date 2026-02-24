@@ -9,7 +9,6 @@ export enum Phase {
   // Event Flow Phases
   EVENT_VENUE_CHECK = 6,
   EVENT_POLICY_GUIDANCE = 7,
-  EVENT_SPEAKER_FORM = 8,
   EVENT_SPEAKER_FINALIZE = 9,
   // New Procurement Phase
   FUNDING_CHECK = 10,
