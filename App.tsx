@@ -121,6 +121,12 @@ const App: React.FC = () => {
           ];
         case Phase.EVENT_POLICY_GUIDANCE:
           return [
+            "Querying Oracle Supplier Master...",
+            "Retrieving Address Data...",
+            "Checking for Duplicate Profiles..."
+          ];
+        case Phase.EVENT_SPEAKER_FINALIZE:
+          return [
             "Drafting Payment Request for Oracle Financial Cloud...",
             "Setting Dashboard Reminders for Guest List...",
             "Establishing Inbox Monitors for Vendor Quotes..."
@@ -298,8 +304,18 @@ ${projectInfo.user}`
           break;
 
         case Phase.EVENT_POLICY_GUIDANCE:
-          response.content = `Excellent.  I’ve confirmed that **${userInput}** has an active supplier profile in Oracle. I have everything I need to create the payment request for **${userInput}**, and I am submitting it now to your Departmental Approver.\n\nAs a reminder, I've added a task to your dashboard and will nudge you in a few days to upload the finalized guest list for Saltaire Catering. \n\nI am also actively monitoring our inbox. Once Bright Event Rentals and Ace Parking return their quotes, I will automatically retrieve them and finalize those requisitions to secure all your event elements.\n\n**You are all set for now!** I'll handle these next steps in the background. If you have any other questions, just let me know. Otherwise, I look forward to collaborating with you to finalize these details!`;
-          // Explicitly removing response.actions to prevent buttons from rendering
+          response.content = `I found **3 active supplier profiles** matching "${userInput}" in the Oracle Supplier Master. To ensure the payment is routed to the correct individual and address, please select the intended recipient:`;
+          response.actions = [
+            "Adam B Mounts (123 La Jolla... 92037, CA)",
+            "Adam W Mounts (456 University... 92122, CA)",
+            "Adam Mounts-Erickson (789 Torrey... 92093, CA)"
+          ];
+          setPhase(Phase.EVENT_SPEAKER_FINALIZE);
+          break;
+
+        case Phase.EVENT_SPEAKER_FINALIZE:
+          response.content = `Thanks. You've selected **${userInput}**. I've confirmed their speaking fee is **$1,000** and included it in the payment request, which I am now submitting to your **Departmental Approver**.\n\nI've also created a task on your dashboard to **confirm the total attendee count for Concur Reconciliation** once the event concludes.\n\nI am actively monitoring our inbox for quotes from **Bright Event Rentals** and **Ace Parking**. Once detected, I will automatically finalize those requisitions.\n\n**You are all set for now!** I’ll handle these background actions and alert you if anything requires your attention.`;
+          setTaskCount(prev => prev + 1);
           setPhase(Phase.FINISHED);
           break;
         // Removed Phase.EVENT_SPEAKER_FORM entirely
