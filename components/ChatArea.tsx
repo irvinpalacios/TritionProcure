@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Terminal, ShieldCheck, Zap, ArrowRight, CheckCircle2, Loader2, Circle, Database, Cloud, Mail, Bot, User } from 'lucide-react';
+import { Send, Terminal, ShieldCheck, Zap, ArrowRight, CheckCircle2, Loader2, Circle, Database, Cloud, Mail, Bot, User, Keyboard } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Message, ProcessingStep, Phase } from '../types';
 
@@ -261,9 +261,12 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processi
       </div>
 
       {/* Input Bar */}
-      <div className="p-6 border-t border-slate-100 bg-white/80 backdrop-blur-md shrink-0">
+      <div className="p-6 border-t border-slate-200 bg-slate-50 shadow-inner shrink-0">
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto flex items-end gap-4">
           <div className="flex-1 relative">
+            <div className="absolute left-5 bottom-4.5 text-slate-400 pointer-events-none">
+              <Keyboard size={18} />
+            </div>
             <textarea 
               ref={textareaRef}
               disabled={isTyping}
@@ -272,8 +275,8 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processi
               onKeyDown={handleKeyDown}
               rows={1}
               style={{ maxHeight: '200px', resize: 'none' }}
-              placeholder={isTyping ? "TritonProcure is orchestrating..." : "Ask TritonProcure about your purchase..."}
-              className={`w-full bg-slate-100/80 border border-slate-200 rounded-2xl px-6 py-4 pr-24 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-ucsd-blue/20 focus:bg-white transition-all shadow-sm overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] ${isTyping ? 'cursor-not-allowed opacity-50' : ''}`}
+              placeholder={isTyping ? "TritonProcure is orchestrating..." : "Type your message or select an option above..."}
+              className={`w-full bg-white border border-slate-200 rounded-2xl pl-12 py-4 pr-24 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-ucsd-blue/10 transition-all shadow-sm overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] ${isTyping ? 'cursor-not-allowed opacity-50' : ''}`}
             />
             <div className="absolute right-4 bottom-4 hidden md:flex items-center gap-2 text-slate-400">
                <span className="text-[9px] font-bold border border-slate-200 rounded px-1.5 py-0.5 bg-white shadow-xs uppercase tracking-tighter">ENTER</span>
