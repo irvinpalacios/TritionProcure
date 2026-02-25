@@ -102,7 +102,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processi
                     <table className="w-full text-xs text-left">
                       <thead className="bg-slate-50 border-b border-slate-200">
                         <tr>
-                          <th className="p-3 font-bold text-slate-600 uppercase tracking-tighter whitespace-nowrap">Metric</th>
+                          <th className="p-3 font-bold text-slate-600 uppercase tracking-tighter whitespace-nowrap">Options</th>
                           {msg.metadata.options.map((opt: any, i: number) => (
                             <th key={i} className={`p-3 font-bold ${i === 1 ? 'text-ucsd-blue' : 'text-slate-600'} uppercase tracking-tighter whitespace-nowrap`}>
                               <div className="flex flex-col gap-1">
@@ -121,7 +121,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processi
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
-                        {['price', 'shipping', 'compliance'].map((field) => (
+                        {['price', 'quantity', 'shipping', 'compliance'].map((field) => (
                           <tr key={field}>
                             <td className="p-3 capitalize text-slate-500 font-bold">{field}</td>
                             {msg.metadata.options.map((opt: any, i: number) => (

@@ -246,7 +246,7 @@ const App: React.FC = () => {
     if (currentWorkflow === 'commodity') {
       switch (currentPhase) {
         case Phase.IDLE:
-          response.content = "That is great. I found over **300+ results** for pens across **28 approved suppliers**. \n\nLet's narrow down your search. Based on your departmental history, I have recommend the following type of pen: **Standard black .7mm retractable pens (Box of 12)**. \n\nWould you like to proceed with this recommendation, or are you looking for something else (e.g., red, blue, or custom pens)?";
+          response.content = "That is great. I found over **300+ results** for pens across **28 approved suppliers**. \n\nLet's narrow down your search. Based on your departmental history, I have recommend the following type of pen: **Standard black .7mm retractable pens**. \n\nWould you like to proceed with this recommendation, or are you looking for something else (e.g., red, blue, or custom pens)?";
           setPhase(Phase.COMMODITY_SOURCE);
           break;
 
@@ -255,9 +255,9 @@ const App: React.FC = () => {
           response.metadata = {
             type: 'comparison',
             options: [
-              { label: 'Amazon Business', price: '$2.00', quantity: '12', shipping: 'Ships Today', stockStatus: 'In Stock', compliance: 'Contracted', isRecommended: true },
-              { label: 'Carroll Business Supply', price: '$2.25', quantity: '12', shipping: 'Ships in 3 Days', stockStatus: 'In Stock', supplierType: 'Small Business', compliance: 'Contracted' },
-              { label: 'Pilot G2 (Box of 48)', price: '$14.50', quantity: '48', shipping: 'Ships Today', stockStatus: 'In Stock', compliance: 'Contracted' },
+              { label: 'Amazon Business', price: '$2.50', quantity: '12', shipping: 'Ships Today', stockStatus: 'In Stock', compliance: 'Contracted', },
+              { label: 'Carroll Business Supply', price: '$2.25', quantity: '12', shipping: 'Ships in 3 Days', stockStatus: 'In Stock', supplierType: 'Small Business', compliance: 'Contracted', isRecommended: true },
+              { label: 'Pilot G2', price: '$14.50', quantity: '48', shipping: 'Ships Today', stockStatus: 'In Stock', compliance: 'Contracted' },
               { label: 'Uni-ball Onyx', price: '$12.99', quantity: '24', shipping: 'Ships Tomorrow', stockStatus: 'In Stock', compliance: 'Contracted' },
             ]
           };
@@ -271,7 +271,7 @@ const App: React.FC = () => {
           break;
 
         case Phase.COMMODITY_CHECKOUT:
-          response.content = `✅ **Order successfully placed!** \n\n\n**Order Confirmation:** #ORD-9928172\n\n**Oracle PO:** #PUR00882716\n\n**Tracking:** 1Z999AA10123456789 (UPS)\n\nI will monitor the Oracle system and notify you once the package reaches **last-mile delivery** to your building. How else can I assist you today?`;
+          response.content = `✅ **Order successfully placed!** \n\n\n**Supplier Order Confirmation:** #ORD-9928172\n\n**Oracle PO:** #PUR00882716\n\n**Tracking:** 1Z999AA10123456789 (UPS)\n\nI will monitor the Oracle system and notify you once the package reaches **last-mile delivery** to your building. How else can I assist you today?`;
           setPhase(Phase.FINISHED);
           break;
 
