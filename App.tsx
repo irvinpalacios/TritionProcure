@@ -246,7 +246,7 @@ const App: React.FC = () => {
     if (currentWorkflow === 'commodity') {
       switch (currentPhase) {
         case Phase.IDLE:
-          response.content = "That is great. I found over **300 results** across **50 approved suppliers**. \n\nBased on your departmental history, I have a **Recommendation**: Standard black .7mm retractable pens (Box of 12). \n\nWould you like to proceed with this recommendation, or are you looking for something else (e.g., red, blue, or custom pens)?";
+          response.content = "That is great. I found over **300+ results** for pens across **28 approved suppliers**. \n\nLet's narrow down your search. Based on your departmental history, I have recommend the following type of pen: **Standard black .7mm retractable pens (Box of 12)**. \n\nWould you like to proceed with this recommendation, or are you looking for something else (e.g., red, blue, or custom pens)?";
           setPhase(Phase.COMMODITY_SOURCE);
           break;
 
