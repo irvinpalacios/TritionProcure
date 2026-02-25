@@ -20,7 +20,11 @@ export enum Phase {
   EVENT_FUNDING_CHECK = 14,
   EVENT_RENTAL_QUOTE = 15,
   EVENT_VALET_QUOTE = 16,
-  EVENT_CATERING_CHECK = 17
+  EVENT_CATERING_CHECK = 17,
+  // Commodity Phases
+  COMMODITY_SOURCE = 18,
+  COMMODITY_REFINE = 19,
+  COMMODITY_CHECKOUT = 20
 }
 
 export interface ProcessingStep {

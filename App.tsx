@@ -11,7 +11,7 @@ const App: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [currentSteps, setCurrentSteps] = useState<ProcessingStep[]>([]);
-  const [workflowType, setWorkflowType] = useState<'procure' | 'event' | null>(null);
+  const [workflowType, setWorkflowType] = useState<'procure' | 'event' | 'commodity' | null>(null);
   const [taskCount, setTaskCount] = useState<number>(0);
   
   const projectInfo: ProjectInfo = {
@@ -84,8 +84,39 @@ const App: React.FC = () => {
     setCurrentSteps([]);
   };
 
-  const getStepsForPhase = (currentPhase: Phase, userInput: string, workflowOverride?: 'procure' | 'event'): string[] => {
+  const getStepsForPhase = (currentPhase: Phase, userInput: string, workflowOverride?: 'procure' | 'event' | 'commodity'): string[] => {
     const activeWorkflow = workflowOverride || workflowType;
+    if (activeWorkflow === 'commodity') {
+      switch (currentPhase) {
+        case Phase.IDLE:
+          return [
+            "Searching 10 suppliers...",
+            "Searching 50 suppliers...",
+            "Analyzing 300+ results..."
+          ];
+        case Phase.COMMODITY_SOURCE:
+          return [
+            "Retrieving Contracted Pricing...",
+            "Comparing Delivery Timelines...",
+            "Verifying In-Stock Inventory..."
+          ];
+        case Phase.COMMODITY_REFINE:
+          return [
+            "Verifying In-Stock Inventory...",
+            "Auto-routing General Funds...",
+            "Validating Ship-To Location..."
+          ];
+        case Phase.COMMODITY_CHECKOUT:
+          return [
+            "Transmitting Purchase Order to Oracle Cloud...",
+            "Securing B2B Acknowledgement...",
+            "Establishing Last-Mile Tracking Monitor..."
+          ];
+        default:
+          return ["Optimizing Workflow...", "Syncing with Oracle ERP"];
+      }
+    }
+
     if (activeWorkflow === 'event') {
       switch (currentPhase) {
         case Phase.IDLE:
@@ -196,7 +227,7 @@ const App: React.FC = () => {
     }
   };
 
-  const processAgentResponse = async (userInput: string, phaseOverride?: Phase, workflowOverride?: 'procure' | 'event') => {
+  const processAgentResponse = async (userInput: string, phaseOverride?: Phase, workflowOverride?: 'procure' | 'event' | 'commodity') => {
     const currentPhase = phaseOverride !== undefined ? phaseOverride : phase;
     const currentWorkflow = workflowOverride || workflowType;
 
@@ -214,7 +245,42 @@ const App: React.FC = () => {
       timestamp: new Date()
     };
 
-    if (currentWorkflow === 'event') {
+    if (currentWorkflow === 'commodity') {
+      switch (currentPhase) {
+        case Phase.IDLE:
+          response.content = "I've acknowledged your request for pens. I found over **300 results** across **50 approved suppliers**. \n\nBased on your departmental history, I have a **Strong Recommendation**: Standard black .7mm retractable gel pens (Box of 12). \n\nWould you like to proceed with this recommendation, or are you looking for something else (e.g., red, blue, or milky pens)?";
+          response.actions = ["Accept Recommendation", "Show me Blue/Red options"];
+          setPhase(Phase.COMMODITY_SOURCE);
+          break;
+
+        case Phase.COMMODITY_SOURCE:
+          response.content = "Excellent. I've pulled the top sourcing options for your selection. Both options are pre-contracted for UC San Diego:";
+          response.metadata = {
+            type: 'comparison',
+            options: [
+              { label: 'Amazon Business', price: '$2.00', shipping: 'Ships Today', stockStatus: 'In Stock', compliance: 'Contracted', risk: 'Low' },
+              { label: 'Carroll Business Supply', price: '$2.25', shipping: 'Ships in 3 Days', stockStatus: 'In Stock', supplierType: 'Small Business', compliance: 'Contracted', risk: 'Low' }
+            ]
+          };
+          response.actions = ["Select Amazon", "Select Carroll Business Supply"];
+          setPhase(Phase.COMMODITY_REFINE);
+          break;
+
+        case Phase.COMMODITY_REFINE:
+          response.content = `Great choice. Since this is a small commodity purchase, no additional departmental approvals are required. \n\nI have automatically retrieved your default **General Fund** and your primary **Ship-To location** (York Hall, Room 402) from your profile. \n\n**Ready to place the order?**`;
+          response.actions = ["Confirm & Place Order", "Change Shipping/Funding"];
+          setPhase(Phase.COMMODITY_CHECKOUT);
+          break;
+
+        case Phase.COMMODITY_CHECKOUT:
+          response.content = `✅ **Order successfully placed!** \n\n**Order Confirmation:** #ORD-9928172\n**Oracle PO:** #PO-882716\n**Tracking:** 1Z999AA10123456789 (UPS)\n\nI will monitor the Oracle system and notify you once the package reaches **last-mile delivery** to your building. How else can I assist you today?`;
+          setPhase(Phase.FINISHED);
+          break;
+
+        default:
+          response.content = "Process complete. How else can I assist with your procurement needs today?";
+      }
+    } else if (currentWorkflow === 'event') {
       switch (currentPhase) {
         case Phase.IDLE:
           response.content = "The SIO Forum is a fantastic venue for a lunch banquet. I have noted your target date of March 1, 2026, and your headcount of 200. I can certainly help you coordinate the rentals, valet, catering, and speaker compensation. \n\nSince SIO is a specialized facility, I first need to check the guest list composition for policy compliance. **What is the purpose of the event?**";
@@ -417,7 +483,13 @@ ${projectInfo.user}`
   };
 
   const handleStartQuery = (initialMessage: string) => {
-    const intent = /event|plan|symposium|organize|retreat/i.test(initialMessage) ? 'event' : 'procure';
+    let intent: 'procure' | 'event' | 'commodity' = 'procure';
+    if (/event|plan|symposium|organize|retreat/i.test(initialMessage)) {
+      intent = 'event';
+    } else if (/pen|pens/i.test(initialMessage)) {
+      intent = 'commodity';
+    }
+    
     setWorkflowType(intent);
     setActiveTab('chat');
     setPhase(Phase.IDLE);
@@ -449,6 +521,7 @@ ${projectInfo.user}`
   const getActiveSessionName = () => {
     if (workflowType === 'procure') return "Procurement Assistant";
     if (workflowType === 'event') return "Event Coordinator";
+    if (workflowType === 'commodity') return "Commodity Assistant";
     return null;
   };
 

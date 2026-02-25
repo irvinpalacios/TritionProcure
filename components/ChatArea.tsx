@@ -105,7 +105,12 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processi
                           <th className="p-3 font-bold text-slate-600 uppercase tracking-tighter whitespace-nowrap">Metric</th>
                           {msg.metadata.options.map((opt: any, i: number) => (
                             <th key={i} className={`p-3 font-bold ${i === 1 ? 'text-ucsd-blue' : 'text-slate-600'} uppercase tracking-tighter whitespace-nowrap`}>
-                              {opt.label}
+                              <div className="flex flex-col gap-1">
+                                <span>{opt.label}</span>
+                                {opt.supplierType === 'Small Business' && (
+                                  <span className="text-[9px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-md w-fit font-black tracking-widest">SMALL BIZ</span>
+                                )}
+                              </div>
                             </th>
                           ))}
                         </tr>
@@ -116,7 +121,14 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processi
                             <td className="p-3 capitalize text-slate-500 font-bold">{field}</td>
                             {msg.metadata.options.map((opt: any, i: number) => (
                               <td key={i} className={`p-3 ${i === 1 ? 'bg-blue-50/50 font-bold text-ucsd-blue' : 'text-slate-700 font-medium'}`}>
-                                {opt[field]}
+                                <div className="flex items-center gap-2">
+                                  {opt[field]}
+                                  {field === 'shipping' && opt.stockStatus === 'In Stock' && (
+                                    <span className="flex items-center gap-1 text-[10px] text-green-600 font-bold bg-green-50 px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                                      <CheckCircle2 size={10} /> In Stock
+                                    </span>
+                                  )}
+                                </div>
                               </td>
                             ))}
                           </tr>
@@ -265,7 +277,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processi
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto flex items-end gap-4">
           <div className="flex-1 relative">
             <div className="absolute left-5 bottom-4.5 text-slate-400 pointer-events-none">
-              <Keyboard size={0} />
+              <Keyboard size={18} />
             </div>
             <textarea 
               ref={textareaRef}
