@@ -104,24 +104,28 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages, isTyping, processi
                         <tr>
                           <th className="p-3 font-bold text-slate-600 uppercase tracking-tighter whitespace-nowrap">Options</th>
                           {msg.metadata.options.map((opt: any, i: number) => (
-                            <th key={i} className={`p-3 font-bold ${i === 1 ? 'text-ucsd-blue' : 'text-slate-600'} uppercase tracking-tighter whitespace-nowrap`}>
-                              <div className="flex flex-col gap-1">
-                                {opt.isRecommended && (
-                                  <span className="text-[9px] bg-amber-400 text-amber-900 px-1.5 py-0.5 rounded-md w-fit font-black tracking-widest flex items-center gap-1 shadow-sm">
-                                    <Zap size={8} fill="currentColor" /> AI RECOMMENDED
-                                  </span>
-                                )}
-                                <span>{opt.label}</span>
-                                {opt.supplierType === 'Small Business' && (
-                                  <span className="text-[9px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-md w-fit font-black tracking-widest">SMALL BIZ</span>
-                                )}
+                            <th key={i} className={`p-3 font-bold ${i === 1 ? 'text-ucsd-blue' : 'text-slate-600'} uppercase tracking-tighter whitespace-nowrap align-bottom`}>
+                              <div className="flex flex-col gap-1.5">
+                                <div className="h-5 flex items-end">
+                                  {opt.isRecommended && (
+                                    <span className="text-[9px] bg-amber-400 text-amber-900 px-1.5 py-0.5 rounded-md w-fit font-black tracking-widest flex items-center gap-1 shadow-sm">
+                                      <Zap size={8} fill="currentColor" /> AI RECOMMENDED
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span>{opt.label}</span>
+                                  {opt.supplierType === 'Small Business' && (
+                                    <span className="text-[9px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-md w-fit font-black tracking-widest">SMALL BIZ</span>
+                                  )}
+                                </div>
                               </div>
                             </th>
                           ))}
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
-                        {['price', 'quantity', 'shipping', 'compliance'].map((field) => (
+                        {['price', 'quantity', 'pricePerUnit', 'shipping', 'compliance'].map((field) => (
                           <tr key={field}>
                             <td className="p-3 capitalize text-slate-500 font-bold">{field}</td>
                             {msg.metadata.options.map((opt: any, i: number) => (

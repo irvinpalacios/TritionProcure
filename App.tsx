@@ -90,7 +90,7 @@ const App: React.FC = () => {
       switch (currentPhase) {
         case Phase.IDLE:
           return [
-            "Searching 25+ suppliers...",
+            "Searching 20+ suppliers...",
             "Analyzing 300+ results..."
           ];
         case Phase.COMMODITY_SOURCE:
@@ -99,10 +99,20 @@ const App: React.FC = () => {
             "Comparing Delivery Timelines...",
             "Verifying In-Stock Inventory..."
           ];
+        case Phase.COMMODITY_QUANTITY:
+          return [
+            "Calculating Unit Parity...",
+            "Checking Bulk Discount Eligibility..."
+          ];
         case Phase.COMMODITY_REFINE:
           return [
             "Retrieving Funding Options...",
             "Validating Ship-To Location..."
+          ];
+        case Phase.COMMODITY_SUMMARY:
+          return [
+            "Generating Order Manifest...",
+            "Finalizing Compliance Audit..."
           ];
         case Phase.COMMODITY_CHECKOUT:
           return [
@@ -246,7 +256,7 @@ const App: React.FC = () => {
     if (currentWorkflow === 'commodity') {
       switch (currentPhase) {
         case Phase.IDLE:
-          response.content = "That is great. I found over **300+ results** for pens across **28 approved suppliers**. \n\nLet's narrow down your search. Based on your departmental history, I have recommend the following type of pen: **Standard black .7mm retractable pens**. \n\nWould you like to proceed with this recommendation, or are you looking for something else (e.g., red, blue, or custom pens)?";
+          response.content = "That is great. I found over **180+ results** for pens across **21 approved suppliers**. \n\nLet's narrow down your search. Based on your departmental history, I have recommend the following type of pen: **Standard black .7mm retractable pens**. \n\nWould you like to proceed with this recommendation, or are you looking for something else (e.g., red, blue, or custom pens)?";
           setPhase(Phase.COMMODITY_SOURCE);
           break;
 
@@ -255,24 +265,51 @@ const App: React.FC = () => {
           response.metadata = {
             type: 'comparison',
             options: [
-              { label: 'Amazon Business', price: '$2.50', quantity: '12', shipping: 'Ships Today', stockStatus: 'In Stock', compliance: 'Contracted', },
-              { label: 'Carroll Business Supply', price: '$2.25', quantity: '12', shipping: 'Ships in 3 Days', stockStatus: 'In Stock', supplierType: 'Small Business', compliance: 'Contracted', isRecommended: true },
-              { label: 'Pilot G2', price: '$14.50', quantity: '48', shipping: 'Ships Today', stockStatus: 'In Stock', compliance: 'Contracted' },
-              { label: 'Uni-ball Onyx', price: '$12.99', quantity: '24', shipping: 'Ships Tomorrow', stockStatus: 'In Stock', compliance: 'Contracted' },
+              { label: 'Amazon Business', price: '$2.50', quantity: '12', pricePerUnit: '$0.21/pen', shipping: 'Ships Today', stockStatus: 'In Stock', compliance: 'Contracted' },
+              { label: 'Carroll Business Supply', price: '$2.25', quantity: '12', pricePerUnit: '$0.19/pen', shipping: 'Ships in 3 Days', stockStatus: 'In Stock', supplierType: 'Small Business', compliance: 'Contracted', isRecommended: true },
+              { label: 'Pilot G2', price: '$14.50', quantity: '48', pricePerUnit: '$0.30/pen', shipping: 'Ships Today', stockStatus: 'In Stock', compliance: 'Contracted' },
+              { label: 'Uni-ball Onyx', price: '$12.99', quantity: '24', pricePerUnit: '$0.54/pen', shipping: 'Ships Tomorrow', stockStatus: 'In Stock', compliance: 'Contracted' },
             ]
           };
-          response.actions = [];
+          response.actions = ["Select Amazon", "Select Carroll Business Supply", "Select Pilot G2", "Select Uni-ball Onyx"];
+          setPhase(Phase.COMMODITY_QUANTITY);
+          break;
+
+        case Phase.COMMODITY_QUANTITY:
+          response.content = "How many boxes would you like to purchase?";
           setPhase(Phase.COMMODITY_REFINE);
           break;
 
         case Phase.COMMODITY_REFINE:
-          response.content = `Great choice. Since this is a small commodity purchase, no additional departmental approvals are required. \n\nI have automatically retrieved your default fund **1015411-OTHR Symposium Fund** and your primary **Ship-To location** (York Hall, Room 402) from your profile. \n\n**Let me know if you would like to place this order or change any of the funding or shipping details?**`;
+          response.content = `Great choice. Since this is a small commodity purchase, no additional departmental approvals are required. \n\nI have automatically retrieved your default fund **1015411-OTHR Symposium Fund** and your primary **Ship-To location** (York Hall, Room 402) from your profile. \n\n**Please validate these details to proceed.**`;
+          response.actions = ["Confirm Details", "Edit Details"];
+          setPhase(Phase.COMMODITY_SUMMARY);
+          break;
+
+        case Phase.COMMODITY_SUMMARY:
+          // In a real app, we'd pull these from state. For the demo, we'll use the selected vendor if possible or defaults.
+          const selectedVendor = userInput.includes("Amazon") ? "Amazon Business" : "Carroll Business Supply";
+          response.content = `### Order Summary
+* **Vendor:** ${selectedVendor}
+* **Total Quantity:** 1 Box (12 Pens)
+* **Price Per Unit:** $0.19/pen
+* **Total Estimated Price:** $2.25
+* **Funding Source:** 1015411-OTHR Symposium Fund
+* **Shipping Location:** York Hall, Room 402
+
+**Yes, submit order?**`;
+          response.actions = ["Yes, submit order", "No, cancel"];
           setPhase(Phase.COMMODITY_CHECKOUT);
           break;
 
         case Phase.COMMODITY_CHECKOUT:
-          response.content = `✅ **Order successfully placed!** \n\n\n**Supplier Order Confirmation:** #ORD-9928172\n\n**Oracle PO:** #PUR00882716\n\n**Tracking:** 1Z999AA10123456789 (UPS)\n\nI will monitor the Oracle system and notify you once the package reaches **last-mile delivery** to your building. How else can I assist you today?`;
-          setPhase(Phase.FINISHED);
+          if (userInput.toLowerCase().includes("no") || userInput.toLowerCase().includes("cancel")) {
+            response.content = "Order cancelled. How else can I assist you today?";
+            setPhase(Phase.FINISHED);
+          } else {
+            response.content = `✅ **Order successfully placed!** \n\n\n**Supplier Order Confirmation:** #ORD-9928172\n\n**Oracle PO:** #PUR00882716\n\n**Tracking:** 1Z999AA10123456789 (UPS)\n\nI will monitor the Oracle system and notify you once the package reaches **last-mile delivery** to your building. How else can I assist you today?`;
+            setPhase(Phase.FINISHED);
+          }
           break;
 
         default:
